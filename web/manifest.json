@@ -1,0 +1,35 @@
+{
+    "name": "flutter_good_weather",
+    "short_name": "flutter_good_weather",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "好天气App（天气预报、空气质量、生活建议、灾害预警、出行建议、城市切换、城市搜索、天气信息语音播报、语音搜索城市天气、世界国家/地区的城市、常用城市、地图天气、地图搜索定位、手动点击定位、壁纸切换、应用自动更新）。",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
