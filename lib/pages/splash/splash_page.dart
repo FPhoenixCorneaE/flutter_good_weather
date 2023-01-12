@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import '../../constant/constant.dart';
 import '../../util/permission_util.dart';
 
@@ -60,7 +60,7 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
 
   /// 校验权限
   Future<void> _checkPermission(List<Permission> permissions) async {
-    if (!await PermissionUtil.checkSelfPermission(permissions)) {
+    if (!await checkSelfPermission(permissions)) {
       _showAlert(permissions);
     }
   }
@@ -82,20 +82,18 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
                   child: const Text("确定"),
                   onPressed: () {
                     _popDialog(context);
-                    PermissionUtil.checkPermission(
+                    checkPermission(
                         permissionList: permissions,
                         onFailed: () {
                           // 权限至少有一个没有申请成功
                           _isGranted = false;
                           _popDialog(context);
                           _showAlert(permissions);
-                          ToastUtil().showCenterToast("权限至少有一个没有申请成功");
                         },
                         onSuccess: () async {
                           // 权限申请成功
                           _isGranted = true;
                           _popDialog(context);
-                          ToastUtil().showCenterToast("权限申请成功");
                         });
                   })
             ],
