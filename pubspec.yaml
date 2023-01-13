@@ -37,11 +37,27 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-  # permission 权限处理: https://pub.dev/packages/permission_handler
+  # permission 权限管理: https://pub.dev/packages/permission_handler
   permission_handler: ^9.2.0
 
-  # flutter土司插件 https://pub.dev/packages/fluttertoast
+  # flutter 吐司插件：https://pub.dev/packages/fluttertoast
   fluttertoast: ^8.1.2
+
+  # 实现loading动画：https://pub.flutter-io.cn/packages/flutter_easyloading
+  flutter_easyloading: ^3.0.5
+
+  # dio网络库：https://pub.dev/packages/dio
+  dio: ^4.0.6
+
+  # dio cookie管理：https://pub.flutter-io.cn/packages/dio_cookie_manager
+  dio_cookie_manager: ^2.0.0
+
+  # dio cache管理：https://pub.flutter-io.cn/packages/cookie_jar
+  cookie_jar: ^3.0.1
+
+  # dio缓存处理：https://pub.flutter-io.cn/packages/dio_cache_interceptor
+  dio_cache_interceptor: ^3.3.1
+
 
 dev_dependencies:
   flutter_test:
