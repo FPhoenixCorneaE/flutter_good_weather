@@ -58,6 +58,9 @@ dependencies:
   # dio缓存处理：https://pub.flutter-io.cn/packages/dio_cache_interceptor
   dio_cache_interceptor: ^3.3.1
 
+  # SQLite 数据库：https://pub.flutter-io.cn/packages/sqflite
+  sqflite: ^2.2.3
+
 
 dev_dependencies:
   flutter_test:

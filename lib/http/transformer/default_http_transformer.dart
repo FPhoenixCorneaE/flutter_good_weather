@@ -12,7 +12,7 @@ class DefaultHttpTransformer extends HttpTransformer {
 //     "message": "success"
 // }
 
-  /// 单例对象，为了避免多次创建实例
+  // 单例对象，为了避免多次创建实例
   static final DefaultHttpTransformer _instance =
       DefaultHttpTransformer._internal();
 
