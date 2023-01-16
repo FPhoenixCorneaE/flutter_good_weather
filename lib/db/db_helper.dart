@@ -11,17 +11,17 @@ class DbHelper {
   // 单例对象
   static final DbHelper _instance = DbHelper._internal();
 
-  /// 私有构造
-  DbHelper._internal();
-
-  factory DbHelper.getInstance() => _instance;
-
   /// 数据库默认存储的路径
   /// SQLite 数据库是文件系统中由路径标识的文件。如果是relative，
   /// 这个路径是相对于 获取的路径getDatabasesPath()，
   /// Android默认的数据库目录，
   /// iOS/MacOS的documents目录。
   Future<Database>? _db;
+
+  /// 私有构造
+  DbHelper._internal();
+
+  factory DbHelper.getInstance() => _instance;
 
   Future<Database>? getDb() {
     _db ??= _initDb();
@@ -35,8 +35,8 @@ class DbHelper {
     final db = await openDatabase(_dbName, version: 1, onCreate: (db, version) {
       // 数据库创建完成
       // 创建表 一个自增id 一个text
-      db.execute(
-          "create table $provinceTab (id integer primary key autoincrement, name text not null)");
+      return db.execute(
+          "CREATE TABLE $provinceTab (id INTEGER PRIMARY KEY autoincrement, name TEXT not null, city TEXT)");
     }, onUpgrade: (db, oldV, newV) {
       // 升级数据库调用
       // db 数据库

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_good_weather/bean/ProvinceBean.dart';
+import 'package:flutter_good_weather/db/province_dao.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../constant/constant.dart';
@@ -48,6 +52,15 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // 加载本地json文件
+    rootBundle.loadString("${Constant.assetsFiles}province.json").then((value) {
+      List<dynamic> provinceList = json.decode(value);
+      List<ProvinceBean> list = [];
+      for (var data in provinceList) {
+        list.add(ProvinceBean.fromJson(data));
+      }
+      ProvinceDao.getInstance().insert(list);
+    });
     return const Image(
         image: AssetImage("${Constant.assetsImages}pic_bg_splash.png"));
   }
