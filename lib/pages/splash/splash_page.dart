@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_good_weather/bean/ProvinceBean.dart';
 import 'package:flutter_good_weather/db/province_dao.dart';
+import 'package:flutter_good_weather/navi.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../constant/constant.dart';
@@ -53,7 +55,7 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     // 加载本地json文件
-    rootBundle.loadString("${Constant.assetsFiles}province.json").then((value) {
+    rootBundle.loadString("${Constant.assetsJson}province.json").then((value) {
       List<dynamic> provinceList = json.decode(value);
       List<ProvinceBean> list = [];
       for (var data in provinceList) {
@@ -61,8 +63,29 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
       }
       ProvinceDao.getInstance().insert(list);
     });
-    return const Image(
-        image: AssetImage("${Constant.assetsImages}pic_bg_splash.png"));
+    // 2秒后跳转首页
+    Future.delayed(const Duration(seconds: 2), () {
+      Navi.push(context, Navi.homePage);
+    });
+    return Image(
+      image: const AssetImage("${Constant.assetsImages}pic_bg_splash.png"),
+      // 图片渐显效果
+      frameBuilder: (context, child, frame, wasSynchronousLoaded) {
+        if (wasSynchronousLoaded) {
+          return child;
+        } else {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: frame != null
+                ? child
+                : Container(
+                    color: Colors.white,
+                  ),
+          );
+        }
+        ;
+      },
+    );
   }
 
   @override

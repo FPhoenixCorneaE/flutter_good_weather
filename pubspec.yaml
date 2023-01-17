@@ -61,6 +61,9 @@ dependencies:
   # SQLite 数据库：https://pub.flutter-io.cn/packages/sqflite
   sqflite: ^2.2.3
 
+  # 使用svg图标：https://pub.flutter-io.cn/packages/flutter_svg
+  flutter_svg: ^1.1.6
+
 
 dev_dependencies:
   flutter_test:
@@ -85,7 +88,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/files/
+    - assets/json/
+    - assets/svg/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
