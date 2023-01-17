@@ -30,7 +30,7 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             alignment: Alignment.center,
             child: Text(
               title,
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 24, color: Colors.white),
             ),
           ),
           Positioned(
