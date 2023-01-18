@@ -63,10 +63,11 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
       }
       ProvinceDao.getInstance().insert(list);
     });
-    // 2秒后跳转首页
-    Future.delayed(const Duration(seconds: 2), () {
-      Navi.push(context, Navi.homePage);
-    });
+    if (_isGranted) {
+      Future.delayed(const Duration(seconds: 2), () {
+        Navi.push(context, Navi.homePage);
+      });
+    }
     return Image(
       image: const AssetImage("${Constant.assetsImages}pic_bg_splash.png"),
       // 图片渐显效果
@@ -98,6 +99,8 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
   Future<void> _checkPermission(List<Permission> permissions) async {
     if (!await checkSelfPermission(permissions)) {
       _showAlert(permissions);
+    } else {
+      setGranted(true);
     }
   }
 
@@ -122,19 +125,25 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
                         permissionList: permissions,
                         onFailed: () {
                           // 权限至少有一个没有申请成功
-                          _isGranted = false;
+                          setGranted(false);
                           _popDialog(context);
                           _showAlert(permissions);
                         },
                         onSuccess: () async {
                           // 权限申请成功
-                          _isGranted = true;
+                          setGranted(true);
                           _popDialog(context);
                         });
                   })
             ],
           );
         });
+  }
+
+  void setGranted(bool granted) {
+    setState(() {
+      _isGranted = granted;
+    });
   }
 
   /// 退出应用程序

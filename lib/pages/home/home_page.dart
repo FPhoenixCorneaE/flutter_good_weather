@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
@@ -23,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   SearchCityBean? searchCityBean;
   LiveWeatherBean? liveWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
+  DailyWeatherBean? dailyWeatherBean;
 
   @override
   Widget build(BuildContext context) {
@@ -122,9 +124,9 @@ class _HomePageState extends State<HomePage> {
               alignment: FractionalOffset.topCenter,
               child: Container(
                 margin: const EdgeInsets.only(top: 100),
-                child: const Text(
-                  "14℃/9℃",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                child: Text(
+                  "${dailyWeatherBean?.daily?.first.tempMax}℃/${dailyWeatherBean?.daily?.first.tempMin}℃",
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
                 ),
               )),
           Container(
@@ -225,22 +227,26 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 // 时间
                 Text(
-                  "1月17日今天",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  dailyWeatherBean?.daily?[index].fxDate ?? "",
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
                 ),
                 // 气候图标
                 Image(
                     width: 32,
                     height: 32,
                     image: AssetImage(
-                        "${Constant.assetsImages}ic_weather_100.png")),
+                        "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
                 // 温度
-                Text(
-                  "14℃/9℃",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
+                Container(
+                  width: 100,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -284,6 +290,8 @@ class _HomePageState extends State<HomePage> {
         liveWeatherNow(id);
         // 逐小时天气预报
         hourlyWeather(id);
+        // 逐日天气预报
+        dailyWeather(id);
       }
     });
   }
@@ -301,7 +309,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  /// 逐小时天气预报
+  /// 逐小时天气预报 未来24小时
   void hourlyWeather(String id) {
     HttpClient.getInstance()
         .get("/v7/weather/24h?key=${Api.apiKey}", queryParameters: {
@@ -309,6 +317,18 @@ class _HomePageState extends State<HomePage> {
     }).then((value) {
       setState(() {
         hourlyWeatherBean = HourlyWeatherBean.fromJson(value.data);
+      });
+    });
+  }
+
+  /// 逐日天气预报 (免费订阅)最多可以获得7天的数据
+  void dailyWeather(String id) {
+    HttpClient.getInstance()
+        .get("/v7/weather/7d?key=${Api.apiKey}", queryParameters: {
+      "location": id,
+    }).then((value) {
+      setState(() {
+        dailyWeatherBean = DailyWeatherBean.fromJson(value.data);
       });
     });
   }
