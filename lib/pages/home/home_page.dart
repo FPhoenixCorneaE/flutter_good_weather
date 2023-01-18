@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
+import 'package:flutter_good_weather/util/weather_util.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 
 import '../../constant/constant.dart';
@@ -20,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   String? cityName = "北京";
   SearchCityBean? searchCityBean;
   LiveWeatherBean? liveWeatherBean;
+  HourlyWeatherBean? hourlyWeatherBean;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                 shrinkWrap: false,
                 // 内容
                 slivers: <Widget>[
-                  // 天气状况
+                  // 实时天气
                   buildWeatherCondition(),
                   // 逐小时天气预报列表
                   buildHourlyWeather(),
@@ -62,86 +65,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 逐日天气预报列表
-  SliverFixedExtentList buildDailyWeather() {
-    return SliverFixedExtentList(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          return Container(
-            margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                // 时间
-                Text(
-                  "1月17日今天",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                ),
-                // 气候图标
-                Image(
-                    width: 32,
-                    height: 32,
-                    image: AssetImage(
-                        "${Constant.assetsImages}ic_weather_100.png")),
-                // 温度
-                Text(
-                  "14℃/9℃",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ],
-            ),
-          );
-        }, childCount: 7),
-        itemExtent: 48);
-  }
-
-  /// 逐小时天气预报列表
-  SliverToBoxAdapter buildHourlyWeather() {
-    return SliverToBoxAdapter(
-      child: Container(
-        margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
-        height: 100,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: 20,
-          itemBuilder: (context, index) {
-            // 子条目的布局样式
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                // 时间
-                Text(
-                  "上午10:00",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
-                ),
-                // 气候图标
-                Image(
-                    width: 32,
-                    height: 32,
-                    image: AssetImage(
-                        "${Constant.assetsImages}ic_weather_100.png")),
-                // 温度
-                Text(
-                  "12℃",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ],
-            );
-          },
-          // 设置Item项间距
-          separatorBuilder: (context, index) {
-            return const VerticalDivider(
-              width: 20,
-              color: Colors.transparent,
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  /// 天气状况
+  /// 实时天气
   SliverToBoxAdapter buildWeatherCondition() {
     return SliverToBoxAdapter(
       child: Stack(
@@ -151,7 +75,7 @@ class _HomePageState extends State<HomePage> {
               left: 20,
               top: 8,
               child: Text(
-                DateUtil.getTodayOfWeek(),
+                getTodayOfWeek(),
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               )),
           // 温度
@@ -179,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 摄氏度符号
-                    Text(
+                    const Text(
                       "℃",
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
@@ -225,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     Text(
-                      "最近更新时间：${DateUtil.timeDivision(liveWeatherBean?.updateTime?.substring(11, 16))}",
+                      "最近更新时间：${divideTime(updateTime(liveWeatherBean?.updateTime))}",
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     )
                   ],
@@ -245,8 +169,91 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// 逐小时天气预报列表
+  SliverToBoxAdapter buildHourlyWeather() {
+    return SliverToBoxAdapter(
+      child: Container(
+        margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
+        height: 100,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: hourlyWeatherBean?.hourly?.length ?? 0,
+          itemBuilder: (context, index) {
+            // 子条目的布局样式
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 时间
+                Text(
+                  divideTime(
+                      updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                ),
+                // 气候图标
+                Image(
+                    width: 32,
+                    height: 32,
+                    image: AssetImage(
+                        "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
+                // 温度
+                Text(
+                  "${hourlyWeatherBean?.hourly?[index].temp}℃",
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ],
+            );
+          },
+          // 设置Item项间距
+          separatorBuilder: (context, index) {
+            return const VerticalDivider(
+              width: 20,
+              color: Colors.transparent,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// 逐日天气预报列表
+  SliverFixedExtentList buildDailyWeather() {
+    return SliverFixedExtentList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          return Container(
+            margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                // 时间
+                Text(
+                  "1月17日今天",
+                  style: TextStyle(fontSize: 14, color: Colors.white),
+                ),
+                // 气候图标
+                Image(
+                    width: 32,
+                    height: 32,
+                    image: AssetImage(
+                        "${Constant.assetsImages}ic_weather_100.png")),
+                // 温度
+                Text(
+                  "14℃/9℃",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ],
+            ),
+          );
+        }, childCount: 7),
+        itemExtent: 48);
+  }
+
   Future<void> _onRefresh() async {
-    return Future.delayed(const Duration(seconds: 2), () {});
+    return Future.delayed(const Duration(seconds: 2), () {
+      // 搜索城市
+      searchCity();
+    });
   }
 
   @override
@@ -270,14 +277,18 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         searchCityBean = SearchCityBean.fromJson(value.data);
       });
+      // 城市id
       var id = searchCityBean?.location?.first.id;
       if (id != null) {
+        // 实时天气
         liveWeatherNow(id);
+        // 逐小时天气预报
+        hourlyWeather(id);
       }
     });
   }
 
-  /// 实况天气
+  /// 实时天气
   void liveWeatherNow(String id) {
     HttpClient.getInstance()
         .resetBaseUrl(Api.baseUrlWeather)
@@ -286,6 +297,18 @@ class _HomePageState extends State<HomePage> {
     }).then((value) {
       setState(() {
         liveWeatherBean = LiveWeatherBean.fromJson(value.data);
+      });
+    });
+  }
+
+  /// 逐小时天气预报
+  void hourlyWeather(String id) {
+    HttpClient.getInstance()
+        .get("/v7/weather/24h?key=${Api.apiKey}", queryParameters: {
+      "location": id,
+    }).then((value) {
+      setState(() {
+        hourlyWeatherBean = HourlyWeatherBean.fromJson(value.data);
       });
     });
   }
