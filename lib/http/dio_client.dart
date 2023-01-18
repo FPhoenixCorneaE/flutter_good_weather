@@ -3,6 +3,7 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter_good_weather/util/log_util.dart';
 
 import 'dio_config.dart';
 
@@ -30,12 +31,16 @@ class DioClient with DioMixin implements Dio {
     interceptors.add(DioCacheInterceptor(options: cacheOptions));
     // 添加日志拦截器
     interceptors.add(LogInterceptor(
-        request: false,
-        requestHeader: false,
-        requestBody: true,
-        responseHeader: false,
-        responseBody: true,
-        error: true));
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      logPrint: (object) {
+        LogUtil.d(object);
+      },
+    ));
     // 添加Cookie管理拦截器
     if (dioConfig?.cookiesPath?.isNotEmpty ?? false) {
       interceptors.add(CookieManager(

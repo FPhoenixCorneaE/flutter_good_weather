@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_good_weather/bean/ProvinceBean.dart';
+import 'package:flutter_good_weather/bean/province_bean.dart';
 import 'package:flutter_good_weather/db/province_dao.dart';
 import 'package:flutter_good_weather/navi.dart';
 import 'package:permission_handler/permission_handler.dart';

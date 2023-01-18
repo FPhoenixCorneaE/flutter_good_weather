@@ -29,6 +29,6 @@ class DefaultHttpTransformer extends HttpTransformer {
     // } else {
     // return HttpResponse.failure(errorMsg:response.data["message"],errorCode: response.data["code"]);
     // }
-    return HttpResponse.success(response.data["data"]);
+    return HttpResponse.success(response.data);
   }
 }

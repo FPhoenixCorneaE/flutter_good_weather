@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/bean/live_weather_bean.dart';
+import 'package:flutter_good_weather/bean/search_city_bean.dart';
+import 'package:flutter_good_weather/http/api/api.dart';
+import 'package:flutter_good_weather/http/http_client.dart';
+import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 
 import '../../constant/constant.dart';
@@ -12,13 +17,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? cityName = "北京";
+  SearchCityBean? searchCityBean;
+  LiveWeatherBean? liveWeatherBean;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // 设置AppBar状态栏透明
       extendBodyBehindAppBar: true,
-      appBar: const TitleBar(
-        "城市天气",
+      appBar: TitleBar(
+        cityName ?? "城市天气",
         imgName: "ic_add.svg",
       ),
       body: RefreshIndicator(
@@ -138,12 +147,12 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           // 星期几
-          const Positioned(
+          Positioned(
               left: 20,
               top: 8,
               child: Text(
-                "星期几",
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                DateUtil.getTodayOfWeek(),
+                style: const TextStyle(fontSize: 18, color: Colors.white),
               )),
           // 温度
           Align(
@@ -157,9 +166,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                     margin: const EdgeInsets.only(top: 8, right: 8),
-                    child: const Text(
-                      "12",
-                      style: TextStyle(
+                    child: Text(
+                      liveWeatherBean?.now?.temp ?? "",
+                      style: const TextStyle(
                           fontSize: 60,
                           color: Colors.white,
                           fontWeight: FontWeight.w400),
@@ -168,16 +177,16 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     // 摄氏度符号
                     Text(
                       "℃",
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    // 天气状况和空气质量
+                    // 天气状况
                     Text(
-                      "多云",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      liveWeatherBean?.now?.text ?? "",
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ],
                 )
@@ -215,9 +224,9 @@ class _HomePageState extends State<HomePage> {
                         )
                       ],
                     ),
-                    const Text(
-                      "最近更新时间：下午15:45",
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    Text(
+                      "最近更新时间：${DateUtil.timeDivision(liveWeatherBean?.updateTime?.substring(11, 16))}",
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     )
                   ],
                 )
@@ -238,5 +247,46 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _onRefresh() async {
     return Future.delayed(const Duration(seconds: 2), () {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 搜索城市
+    searchCity();
+  }
+
+  /// 搜索城市  模糊搜索，国内范围 返回10条数据
+  void searchCity() {
+    if (cityName == null) {
+      return;
+    }
+    HttpClient.getInstance()
+        .resetBaseUrl(Api.baseUrlSearch)
+        .get("/v2/city/lookup?key=${Api.apiKey}&range=cn", queryParameters: {
+      "location": cityName,
+    }).then((value) {
+      setState(() {
+        searchCityBean = SearchCityBean.fromJson(value.data);
+      });
+      var id = searchCityBean?.location?.first.id;
+      if (id != null) {
+        liveWeatherNow(id);
+      }
+    });
+  }
+
+  /// 实况天气
+  void liveWeatherNow(String id) {
+    HttpClient.getInstance()
+        .resetBaseUrl(Api.baseUrlWeather)
+        .get("/v7/weather/now?key=${Api.apiKey}", queryParameters: {
+      "location": id,
+    }).then((value) {
+      setState(() {
+        liveWeatherBean = LiveWeatherBean.fromJson(value.data);
+      });
+    });
   }
 }

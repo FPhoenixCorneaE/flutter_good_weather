@@ -1,4 +1,4 @@
-import 'package:flutter_good_weather/bean/ProvinceBean.dart';
+import 'package:flutter_good_weather/bean/province_bean.dart';
 import 'package:flutter_good_weather/db/db_helper.dart';
 import 'package:sqflite/sqflite.dart';
 

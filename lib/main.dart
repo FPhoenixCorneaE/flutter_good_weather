@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/util/log_util.dart';
 
 import 'pages/splash/splash_page.dart';
 
 void main() {
+  LogUtil.init(isDebug: kDebugMode);
   runApp(const MyApp());
 }
 

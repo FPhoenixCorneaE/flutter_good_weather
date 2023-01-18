@@ -20,13 +20,17 @@ class HttpClient {
   HttpClient._internal({BaseOptions? options, DioConfig? dioConfig})
       : _dio = DioClient(options: options, dioConfig: dioConfig);
 
-  HttpClient getInstance(
+  static HttpClient getInstance(
       {String? baseUrl, BaseOptions? options, DioConfig? dioConfig}) {
     _instance ??= HttpClient._internal(options: options, dioConfig: dioConfig);
+    return _instance!;
+  }
+
+  HttpClient resetBaseUrl(String? baseUrl) {
     if (baseUrl != null) {
       _dio.options.baseUrl = baseUrl;
     }
-    return _instance!;
+    return this;
   }
 
   /// get
