@@ -1,9 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
+import 'package:flutter_good_weather/bean/life_index_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
@@ -31,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   HourlyWeatherBean? hourlyWeatherBean;
   DailyWeatherBean? dailyWeatherBean;
   AirQualityBean? airQualityBean;
+  LifeIndexBean? lifeIndexBean;
 
   @override
   Widget build(BuildContext context) {
@@ -67,56 +67,33 @@ class _HomePageState extends State<HomePage> {
                   // 空气质量
                   buildAirQuality(),
                   // 风向风力风速
+                  buildWindBox(),
+                  // 生活指数
                   SliverToBoxAdapter(
-                    child: Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 20, top: 8),
-                          child: const Text(
-                            "风向风力风速",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ),
-                        // 动力风车
-                        Container(
-                          margin: const EdgeInsets.only(left: 60, top: 48),
-                          child: const Windmills(width: 120, height: 140),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 130, top: 118),
-                          child: const Windmills(width: 60, height: 70),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 300, top: 48),
-                          height: 138,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 风向
-                              Text(
-                                "风向     ${liveWeatherBean?.now?.windDir}",
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
-                              ),
-                              // 风力
-                              Text(
-                                "风力     ${liveWeatherBean?.now?.windScale}级(${getWindScale(int.parse(liveWeatherBean?.now?.windScale ?? "0"))})",
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
-                              ),
-                              // 风速
-                              Text(
-                                "风速     ${liveWeatherBean?.now?.windSpeed}km/h",
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 20, top: 16),
+                      child: const Text(
+                        "生活指数",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
                     ),
-                  )
+                  ),
+                  const SliverPadding(padding: EdgeInsets.only(top: 8)),
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
+                        return Container(
+                          margin: const EdgeInsets.only(
+                              left: 20, top: 8, right: 20, bottom: 8),
+                          child: Text(
+                            "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text}",
+                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  const SliverPadding(padding: EdgeInsets.only(top: 20)),
                 ],
               ),
             )
@@ -488,6 +465,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// 风向风力风速
+  SliverToBoxAdapter buildWindBox() {
+    return SliverToBoxAdapter(
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(left: 20, top: 8),
+            child: const Text(
+              "风向风力风速",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+          // 动力风车
+          Container(
+            margin: const EdgeInsets.only(left: 60, top: 48),
+            child: const Windmills(width: 120, height: 140),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 130, top: 118),
+            child: const Windmills(width: 60, height: 70),
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 300, top: 48),
+            height: 138,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 风向
+                Text(
+                  "风向     ${liveWeatherBean?.now?.windDir}",
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+                // 风力
+                Text(
+                  "风力     ${liveWeatherBean?.now?.windScale}级(${getWindScale(int.parse(liveWeatherBean?.now?.windScale ?? "0"))})",
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+                // 风速
+                Text(
+                  "风速     ${liveWeatherBean?.now?.windSpeed}km/h",
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Future<void> _onRefresh() async {
     return Future.delayed(const Duration(seconds: 2), () {
       // 搜索城市
@@ -527,6 +555,8 @@ class _HomePageState extends State<HomePage> {
         dailyWeather(id);
         // 当天空气质量
         airQuality(id);
+        // 生活指数
+        lifeIndex(id);
       }
     });
   }
@@ -576,6 +606,24 @@ class _HomePageState extends State<HomePage> {
     }).then((value) {
       setState(() {
         airQualityBean = AirQualityBean.fromJson(value.data);
+      });
+    });
+  }
+
+  /// 生活指数
+  /// 可以控制定向获取那几项数据
+  /// 全部数据 0, 运动指数	1, 洗车指数	 2, 穿衣指数 3,
+  /// 钓鱼指数 4, 紫外线指数 5, 旅游指数 6, 花粉过敏指数 7, 舒适度指数 8,
+  /// 感冒指数 9, 空气污染扩散条件指数	10, 空调开启指数 11, 太阳镜指数 12,
+  /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
+  void lifeIndex(String id) {
+    HttpClient.getInstance()
+        .get("/v7/indices/1d?key=${Api.apiKey}", queryParameters: {
+      "type": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
+      "location": id,
+    }).then((value) {
+      setState(() {
+        lifeIndexBean = LifeIndexBean.fromJson(value.data);
       });
     });
   }
