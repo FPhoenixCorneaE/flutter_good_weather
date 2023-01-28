@@ -1,3 +1,4 @@
+/// 获取天气图标名称
 String getWeatherIconName(int? code) {
   int iconNameSuffix;
   switch (code) {
@@ -262,4 +263,64 @@ String getWeatherIconName(int? code) {
       break;
   }
   return "ic_weather_$iconNameSuffix.png";
+}
+
+/// 获取风力等级
+String getWindScale(int? scale) {
+  String windScale;
+  if (scale == null) {
+    windScale = "无风";
+    return windScale;
+  }
+  switch (scale) {
+    case 0:
+      windScale = "无风";
+      break;
+    case 1:
+      windScale = "软风";
+      break;
+    case 2:
+      windScale = "轻风";
+      break;
+    case 3:
+      windScale = "微风";
+      break;
+    case 4:
+      windScale = "和风";
+      break;
+    case 5:
+      windScale = "清风";
+      break;
+    case 6:
+      windScale = "强风";
+      break;
+    case 7:
+      windScale = "疾风";
+      break;
+    case 8:
+      windScale = "大风";
+      break;
+    case 9:
+      windScale = "烈风";
+      break;
+    case 10:
+      windScale = "狂风";
+      break;
+    case 11:
+      windScale = "暴风";
+      break;
+    case 12:
+      windScale = "飓风";
+      break;
+    case 13:
+      windScale = "台风";
+      break;
+    case 14:
+    case 15:
+      windScale = "强台风";
+      break;
+    default:
+      windScale = "超强台风";
+  }
+  return windScale;
 }
