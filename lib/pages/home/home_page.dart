@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../constant/constant.dart';
 
@@ -25,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   LiveWeatherBean? liveWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
   DailyWeatherBean? dailyWeatherBean;
+  AirQualityBean? airQualityBean;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +61,8 @@ class _HomePageState extends State<HomePage> {
                   buildHourlyWeather(),
                   // 逐日天气预报列表
                   buildDailyWeather(),
+                  // 空气质量
+                  buildAirQuality(),
                 ],
               ),
             )
@@ -255,6 +260,186 @@ class _HomePageState extends State<HomePage> {
         itemExtent: 48);
   }
 
+  /// 空气质量
+  SliverToBoxAdapter buildAirQuality() {
+    return SliverToBoxAdapter(
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(left: 20, top: 8),
+            child: const Text(
+              "空气质量",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 48),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "污染指数",
+                      style: TextStyle(
+                          color: Colors.white, fontSize: 14),
+                    ),
+                    const Divider(
+                      color: Colors.transparent,
+                      thickness: 8,
+                    ),
+                    SleekCircularSlider(
+                      appearance: CircularSliderAppearance(
+                        customWidths: CustomSliderWidths(
+                          trackWidth: 8,
+                          progressBarWidth: 8,
+                          shadowWidth: 20,
+                        ),
+                        customColors: CustomSliderColors(
+                          trackColor: Colors.grey,
+                          progressBarColors: [
+                            Colors.pink,
+                            Colors.yellow,
+                            Colors.blue
+                          ],
+                          shadowColor: Colors.white,
+                          shadowMaxOpacity: 0.05,
+                          dotColor: Colors.transparent,
+                        ),
+                        infoProperties: InfoProperties(
+                          // 空气质量描述 取值范围：优，良，轻度污染，中度污染，重度污染，严重污染
+                          topLabelText:
+                          airQualityBean?.now?.category,
+                          topLabelStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          mainLabelStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w400),
+                          modifier: (value) {
+                            return "${value.toInt()}";
+                          },
+                        ),
+                        startAngle: 135,
+                        angleRange: 270,
+                        size: 120,
+                        animationEnabled: true,
+                      ),
+                      min: 0,
+                      max: 100,
+                      // 当前进度
+                      initialValue: double.parse(
+                          airQualityBean?.now?.aqi ?? "0"),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 138,
+                  child: Column(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "PM10",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                      Text(
+                        "PM2.5",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                      Text(
+                        "NO₂",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                      Text(
+                        "SO₂",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                      Text(
+                        "O₃",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                      Text(
+                        "CO",
+                        style: TextStyle(
+                            color: Color(0xff9FC8E9),
+                            fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 138,
+                  child: Column(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // PM10
+                      Text(
+                        airQualityBean?.now?.pm10 ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                      // PM2.5
+                      Text(
+                        airQualityBean?.now?.pm2p5 ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                      // 二氧化氮
+                      Text(
+                        airQualityBean?.now?.no2 ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                      // 二氧化硫
+                      Text(
+                        airQualityBean?.now?.so2 ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                      // 臭氧
+                      Text(
+                        airQualityBean?.now?.o3 ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                      // 一氧化碳
+                      Text(
+                        airQualityBean?.now?.co ?? "",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _onRefresh() async {
     return Future.delayed(const Duration(seconds: 2), () {
       // 搜索城市
@@ -292,6 +477,8 @@ class _HomePageState extends State<HomePage> {
         hourlyWeather(id);
         // 逐日天气预报
         dailyWeather(id);
+        // 当天空气质量
+        airQuality(id);
       }
     });
   }
@@ -329,6 +516,18 @@ class _HomePageState extends State<HomePage> {
     }).then((value) {
       setState(() {
         dailyWeatherBean = DailyWeatherBean.fromJson(value.data);
+      });
+    });
+  }
+
+  /// 当天空气质量
+  void airQuality(String id) {
+    HttpClient.getInstance()
+        .get("/v7/air/now?key=${Api.apiKey}", queryParameters: {
+      "location": id,
+    }).then((value) {
+      setState(() {
+        airQualityBean = AirQualityBean.fromJson(value.data);
       });
     });
   }

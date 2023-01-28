@@ -64,6 +64,9 @@ dependencies:
   # 使用svg图标：https://pub.flutter-io.cn/packages/flutter_svg
   flutter_svg: ^1.1.6
 
+  # 高度可定制的圆形滑块/进度条：https://pub.flutter-io.cn/packages/sleek_circular_slider
+  sleek_circular_slider: ^2.0.1
+
 
 dev_dependencies:
   flutter_test:
