@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
@@ -8,9 +10,12 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
+import 'package:flutter_good_weather/util/screen_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
+import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
+import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../constant/constant.dart';
@@ -31,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   DailyWeatherBean? dailyWeatherBean;
   AirQualityBean? airQualityBean;
   LifeIndexBean? lifeIndexBean;
+  Function? cityDialogCloseFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +45,11 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       appBar: TitleBar(
         cityName ?? "城市天气",
-        imgName: "ic_add.svg",
+        rightImgName: "ic_add.svg",
+        onRightImgTap: () {
+          // 弹窗宽度
+          showCityDialog(context);
+        },
       ),
       body: RefreshIndicator(
         displacement: 120,
@@ -79,25 +89,91 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SliverPadding(padding: EdgeInsets.only(top: 8)),
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
-                        return Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, top: 8, right: 20, bottom: 8),
-                          child: Text(
-                            "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text}",
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
+                  buildLifeIndex(),
                   const SliverPadding(padding: EdgeInsets.only(top: 20)),
                 ],
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  /// 显示城市弹窗
+  void showCityDialog(BuildContext context) {
+    double dialogWidth = 120;
+    // 弹窗每项高度
+    double cellHeight = 40;
+    double upArrowHeight = 8;
+    List dataList = ["切换城市", "管理城市", "必应壁纸"];
+    Navigator.push(
+      context,
+      Popup(
+        child: ZoomInDialog(
+          right: 10,
+          top: navigationBarHeight - 10,
+          offset: Offset(dialogWidth / 2,
+              -(cellHeight * dataList.length + upArrowHeight) / 2),
+          fun: (close) {
+            cityDialogCloseFunction = close;
+          },
+          child: SizedBox(
+            width: dialogWidth,
+            height: cellHeight * dataList.length + upArrowHeight,
+            child: Stack(
+              children: [
+                // 三角形
+                Positioned(
+                  right: sqrt(pow(upArrowHeight, 2) * 2),
+                  child: Container(
+                    width: upArrowHeight * 2,
+                    height: upArrowHeight * 2,
+                    transform: Matrix4.rotationZ(pi / 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+
+                // 菜单内容
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    width: dialogWidth,
+                    height: cellHeight * dataList.length,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: dataList
+                          .map<Widget>((value) => InkWell(
+                                child: Container(
+                                  width: double.infinity,
+                                  height: cellHeight,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    value,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {
+                                  cityDialogCloseFunction?.call();
+                                },
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -512,6 +588,24 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  /// 生活指数
+  SliverList buildLifeIndex() {
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
+          return Container(
+            margin:
+                const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 8),
+            child: Text(
+              "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text}",
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          );
+        }),
       ),
     );
   }

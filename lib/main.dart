@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/util/log_util.dart';
 
 import 'pages/splash/splash_page.dart';
+import 'util/screen_util.dart';
 
 void main() {
   LogUtil.init(isDebug: kDebugMode);
@@ -15,6 +16,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // 屏幕适配
+    initScreen(context);
     return MaterialApp(
       theme: ThemeData(
         // This is the theme of your application.

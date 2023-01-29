@@ -67,6 +67,9 @@ dependencies:
   # 高度可定制的圆形滑块/进度条：https://pub.flutter-io.cn/packages/sleek_circular_slider
   sleek_circular_slider: ^2.0.1
 
+  # 屏幕参数适配：https://pub.flutter-io.cn/packages/flutter_screenutil
+  flutter_screenutil: ^5.6.0
+
 
 dev_dependencies:
   flutter_test:

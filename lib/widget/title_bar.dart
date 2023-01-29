@@ -7,9 +7,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// 自定义标题栏
 class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final String? imgName;
+  final String? rightImgName;
+  final GestureTapCallback? onRightImgTap;
 
-  const TitleBar(this.title, {Key? key, this.imgName}) : super(key: key);
+  const TitleBar(this.title, {Key? key, this.rightImgName, this.onRightImgTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +39,22 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             right: 20,
             width: 32,
             height: 32,
-            child: imgName != null
-                ? imgName!.endsWith(".svg")
-                    ? SvgPicture.asset(
-                        "${Constant.assetsSvg}$imgName",
-                      )
-                    : Image(
-                        image: AssetImage("${Constant.assetsImages}$imgName"),
-                      )
-                : Container(),
-          )
+            child: GestureDetector(
+              child: rightImgName != null
+                  ? rightImgName!.endsWith(".svg")
+                      ? SvgPicture.asset(
+                          "${Constant.assetsSvg}$rightImgName",
+                        )
+                      : Image(
+                          image: AssetImage(
+                              "${Constant.assetsImages}$rightImgName"),
+                        )
+                  : Container(),
+              onTap: () {
+                onRightImgTap?.call();
+              },
+            ),
+          ),
         ],
       ),
     );
