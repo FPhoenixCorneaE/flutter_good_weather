@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:city_pickers/city_pickers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
@@ -29,7 +30,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? cityName = "北京";
+  String? cityName = "东城区";
   SearchCityBean? searchCityBean;
   LiveWeatherBean? liveWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
         cityName ?? "城市天气",
         rightImgName: "ic_add.svg",
         onRightImgTap: () {
-          // 弹窗宽度
+          // 显示城市弹窗
           showCityDialog(context);
         },
       ),
@@ -62,12 +63,13 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover,
             )),
             Container(
-              margin: const EdgeInsets.only(top: 120),
+              margin: EdgeInsets.only(top: navigationBarHeight),
               child: CustomScrollView(
                 // 是否根据正在查看的内容确定滚动视图的范围
                 shrinkWrap: false,
                 // 内容
                 slivers: <Widget>[
+                  const SliverPadding(padding: EdgeInsets.only(top: 20)),
                   // 实时天气
                   buildWeatherCondition(),
                   // 逐小时天气预报列表
@@ -102,6 +104,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 显示城市弹窗
   void showCityDialog(BuildContext context) {
+    // 弹窗宽度
     double dialogWidth = 120;
     // 弹窗每项高度
     double cellHeight = 40;
@@ -147,27 +150,41 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(4),
                       color: Colors.white,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: dataList
-                          .map<Widget>((value) => InkWell(
-                                child: Container(
-                                  width: double.infinity,
-                                  height: cellHeight,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    value,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14,
-                                    ),
-                                  ),
+                    child: ListView.separated(
+                      itemCount: dataList.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return Material(
+                          child: InkWell(
+                            onTap: () async {
+                              await cityDialogCloseFunction?.call();
+                              if (index == 0) {
+                                Result? result =
+                                    await CityPickers.showCityPicker(
+                                        context: context);
+                                setCityName(result?.areaName);
+                              }
+                            },
+                            child: Container(
+                              height: cellHeight,
+                              alignment: Alignment.center,
+                              child: Text(
+                                dataList[index],
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
                                 ),
-                                onTap: () {
-                                  cityDialogCloseFunction?.call();
-                                },
-                              ))
-                          .toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(
+                          height: .1,
+                          indent: 50,
+                          endIndent: 0,
+                          color: Color(0xFFE6E6E6)),
                     ),
                   ),
                 ),
@@ -419,12 +436,12 @@ class _HomePageState extends State<HomePage> {
                       topLabelText: airQualityBean?.now?.category,
                       topLabelStyle: const TextStyle(
                         color: Colors.white,
-                        fontSize: 32,
+                        fontSize: 24,
                         fontWeight: FontWeight.w400,
                       ),
                       mainLabelStyle: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
+                          fontSize: 28,
                           fontWeight: FontWeight.w400),
                       modifier: (value) {
                         return "${value.toInt()}";
@@ -436,7 +453,7 @@ class _HomePageState extends State<HomePage> {
                     animationEnabled: true,
                   ),
                   min: 0,
-                  max: 100,
+                  max: 300,
                   // 当前进度
                   initialValue: double.parse(airQualityBean?.now?.aqi ?? "0"),
                 )
@@ -622,6 +639,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     // 搜索城市
+    searchCity();
+  }
+
+  void setCityName(String? name) {
+    if (name == null) {
+      return;
+    }
+    setState(() {
+      cityName = name;
+    });
     searchCity();
   }
 
