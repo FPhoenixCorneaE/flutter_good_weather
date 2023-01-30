@@ -10,6 +10,7 @@ import 'package:flutter_good_weather/bean/live_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
+import 'package:flutter_good_weather/meta/province.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../constant/constant.dart';
@@ -38,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   AirQualityBean? airQualityBean;
   LifeIndexBean? lifeIndexBean;
   Function? cityDialogCloseFunction;
+  Result? cityResult;
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +165,18 @@ class _HomePageState extends State<HomePage> {
                               if (index == 0) {
                                 Result? result =
                                     await CityPickers.showCityPicker(
-                                        context: context);
-                                setCityName(result?.areaName);
+                                  context: context,
+                                  theme: ThemeData.light(useMaterial3: true),
+                                  locationCode: cityResult?.areaId ?? "110000",
+                                  // 顶部圆角值
+                                  borderRadius: 8,
+                                  // 显示省市区
+                                  showType: ShowType.pca,
+                                  citiesData: cityDatas,
+                                  provincesData: provinceDatas,
+                                );
+                                cityResult = result;
+                                switchCity(result?.areaName);
                               }
                             },
                             child: Container(
@@ -618,7 +631,7 @@ class _HomePageState extends State<HomePage> {
             margin:
                 const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 8),
             child: Text(
-              "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text}",
+              "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text ?? lifeIndexBean?.daily?[index].category}",
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           );
@@ -637,19 +650,24 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
-    // 搜索城市
-    searchCity();
+    SharedPreferences.getInstance().then((prefs) {
+      cityName = prefs.getString(Constant.city) ?? cityName;
+      // 搜索城市
+      searchCity();
+    });
   }
 
-  void setCityName(String? name) {
-    if (name == null) {
+  /// 切换城市
+  void switchCity(String? name) {
+    if (name == null || name.isEmpty) {
       return;
     }
     setState(() {
       cityName = name;
     });
     searchCity();
+    SharedPreferences.getInstance()
+        .then((value) => value.setString(Constant.city, name));
   }
 
   /// 搜索城市  模糊搜索，国内范围 返回10条数据

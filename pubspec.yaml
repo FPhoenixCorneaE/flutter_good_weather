@@ -73,6 +73,9 @@ dependencies:
   # 城市选择器：https://pub.flutter-io.cn/packages/city_pickers
   city_pickers: ^1.2.0
 
+  # 偏好数据存储：https://pub.flutter-io.cn/packages/shared_preferences
+  shared_preferences: ^2.0.17
+
 
 dev_dependencies:
   flutter_test:
