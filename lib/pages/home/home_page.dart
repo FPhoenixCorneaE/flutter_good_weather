@@ -12,6 +12,7 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/meta/province.dart';
+import 'package:flutter_good_weather/pages/home/daily_detail_dialog.dart';
 import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
@@ -381,31 +382,43 @@ class _HomePageState extends State<HomePage> {
         delegate: SliverChildBuilderDelegate((context, index) {
           return Container(
             margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 时间
-                Text(
-                  dailyWeatherBean?.daily?[index].fxDate ?? "",
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                ),
-                // 气候图标
-                Image(
-                    width: 32,
-                    height: 32,
-                    image: AssetImage(
-                        "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
-                // 温度
-                Container(
-                  width: 100,
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
+            child: GestureDetector(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // 时间
+                  Text(
+                    dailyWeatherBean?.daily?[index].fxDate ?? "",
+                    style: const TextStyle(fontSize: 14, color: Colors.white),
                   ),
-                ),
-              ],
+                  // 气候图标
+                  Image(
+                      width: 32,
+                      height: 32,
+                      image: AssetImage(
+                          "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
+                  // 温度
+                  Container(
+                    width: 100,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
+                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                // 显示逐日预报详情弹窗
+                showCupertinoDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) {
+                    return DailyDetailDialog(dailyWeatherBean?.daily?[index]);
+                  },
+                );
+              },
             ),
           );
         }, childCount: 7),
