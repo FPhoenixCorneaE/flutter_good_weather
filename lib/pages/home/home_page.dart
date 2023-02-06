@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:city_pickers/city_pickers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/meta/province.dart';
+import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                   // 生活指数
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: const EdgeInsets.only(left: 20, top: 16),
+                      margin: const EdgeInsets.only(left: 20, top: 20),
                       child: const Text(
                         "生活指数",
                         style: TextStyle(color: Colors.white, fontSize: 18),
@@ -324,28 +326,41 @@ class _HomePageState extends State<HomePage> {
           itemCount: hourlyWeatherBean?.hourly?.length ?? 0,
           itemBuilder: (context, index) {
             // 子条目的布局样式
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 时间
-                Text(
-                  divideTime(
-                      updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                ),
-                // 气候图标
-                Image(
-                    width: 32,
-                    height: 32,
-                    image: AssetImage(
-                        "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
-                // 温度
-                Text(
-                  "${hourlyWeatherBean?.hourly?[index].temp}℃",
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ],
+            return GestureDetector(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // 时间
+                  Text(
+                    divideTime(
+                        updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
+                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                  // 气候图标
+                  Image(
+                      width: 32,
+                      height: 32,
+                      image: AssetImage(
+                          "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
+                  // 温度
+                  Text(
+                    "${hourlyWeatherBean?.hourly?[index].temp}℃",
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ],
+              ),
+              onTap: () {
+                // 显示逐小时预报详情弹窗
+                showCupertinoDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (context) {
+                    return HourlyDetailDialog(
+                        hourlyWeatherBean?.hourly?[index]);
+                  },
+                );
+              },
             );
           },
           // 设置Item项间距
@@ -403,7 +418,7 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 8),
+            margin: const EdgeInsets.only(left: 20, top: 20),
             child: const Text(
               "空气质量",
               style: TextStyle(color: Colors.white, fontSize: 18),
@@ -577,7 +592,7 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 8),
+            margin: const EdgeInsets.only(left: 20, top: 20),
             child: const Text(
               "风向风力风速",
               style: TextStyle(color: Colors.white, fontSize: 18),

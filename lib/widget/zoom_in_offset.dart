@@ -86,7 +86,7 @@ class _ZoomInState extends State<ZoomInOffset>
     return AnimatedBuilder(
       animation: fade,
       builder: (BuildContext context, Widget? child) {
-        ///  这个transform有origin的可选构造参数，我们可以手动添加
+        /// 这个transform有origin的可选构造参数，我们可以手动添加
         return Transform.scale(
           origin: widget.offset,
           scale: fade.value,
