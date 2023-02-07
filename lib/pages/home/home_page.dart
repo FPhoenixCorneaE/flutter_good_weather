@@ -328,6 +328,8 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index) {
             // 子条目的布局样式
             return GestureDetector(
+              // 点击整个区域都会响应点击事件，但是点击事件不可穿透向下传递
+              behavior: HitTestBehavior.opaque,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -385,6 +387,8 @@ class _HomePageState extends State<HomePage> {
           return Container(
             margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
             child: GestureDetector(
+              // 点击整个区域都会响应点击事件，但是点击事件不可穿透向下传递
+              behavior: HitTestBehavior.opaque,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
