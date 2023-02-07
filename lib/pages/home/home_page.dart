@@ -327,43 +327,47 @@ class _HomePageState extends State<HomePage> {
           itemCount: hourlyWeatherBean?.hourly?.length ?? 0,
           itemBuilder: (context, index) {
             // 子条目的布局样式
-            return GestureDetector(
-              // 点击整个区域都会响应点击事件，但是点击事件不可穿透向下传递
-              behavior: HitTestBehavior.opaque,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 时间
-                  Text(
-                    divideTime(
-                        updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                  // 气候图标
-                  Image(
-                      width: 32,
-                      height: 32,
-                      image: AssetImage(
-                          "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
-                  // 温度
-                  Text(
-                    "${hourlyWeatherBean?.hourly?[index].temp}℃",
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ],
+            return Material(
+              // 背景色
+              color: Colors.transparent,
+              child: InkWell(
+                // shape圆角半径
+                borderRadius: BorderRadius.circular(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 时间
+                    Text(
+                      divideTime(
+                          updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    // 气候图标
+                    Image(
+                        width: 32,
+                        height: 32,
+                        image: AssetImage(
+                            "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
+                    // 温度
+                    Text(
+                      "${hourlyWeatherBean?.hourly?[index].temp}℃",
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  // 显示逐小时预报详情弹窗
+                  showCupertinoDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (context) {
+                      return HourlyDetailDialog(
+                          hourlyWeatherBean?.hourly?[index]);
+                    },
+                  );
+                },
               ),
-              onTap: () {
-                // 显示逐小时预报详情弹窗
-                showCupertinoDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (context) {
-                    return HourlyDetailDialog(
-                        hourlyWeatherBean?.hourly?[index]);
-                  },
-                );
-              },
             );
           },
           // 设置Item项间距
@@ -386,45 +390,50 @@ class _HomePageState extends State<HomePage> {
           String friendlyTime = "$fxDate ${getDayOfWeek(fxDate)}";
           return Container(
             margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
-            child: GestureDetector(
-              // 点击整个区域都会响应点击事件，但是点击事件不可穿透向下传递
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 时间
-                  Text(
-                    friendlyTime,
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                  // 气候图标
-                  Image(
-                      width: 32,
-                      height: 32,
-                      image: AssetImage(
-                          "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
-                  // 温度
-                  Container(
-                    width: 100,
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
+            child: Material(
+              // 背景色
+              color: Colors.transparent,
+              child: InkWell(
+                // shape圆角半径
+                borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 时间
+                    Text(
+                      friendlyTime,
                       style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                  ),
-                ],
+                    // 气候图标
+                    Image(
+                        width: 32,
+                        height: 32,
+                        image: AssetImage(
+                            "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
+                    // 温度
+                    Container(
+                      width: 100,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  // 显示逐日预报详情弹窗
+                  showCupertinoDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (context) {
+                      return DailyDetailDialog(dailyWeatherBean?.daily?[index]);
+                    },
+                  );
+                },
               ),
-              onTap: () {
-                // 显示逐日预报详情弹窗
-                showCupertinoDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  builder: (context) {
-                    return DailyDetailDialog(dailyWeatherBean?.daily?[index]);
-                  },
-                );
-              },
             ),
           );
         }, childCount: 7),
