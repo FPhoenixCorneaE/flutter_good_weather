@@ -39,20 +39,26 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             right: 20,
             width: 32,
             height: 32,
-            child: GestureDetector(
-              child: rightImgName != null
-                  ? rightImgName!.endsWith(".svg")
-                      ? SvgPicture.asset(
-                          "${Constant.assetsSvg}$rightImgName",
-                        )
-                      : Image(
-                          image: AssetImage(
-                              "${Constant.assetsImages}$rightImgName"),
-                        )
-                  : Container(),
-              onTap: () {
-                onRightImgTap?.call();
-              },
+            child: Material(
+              // 背景色
+              color: Colors.transparent,
+              child: InkWell(
+                // shape圆角半径
+                borderRadius: BorderRadius.circular(16),
+                child: rightImgName != null
+                    ? rightImgName!.endsWith(".svg")
+                        ? SvgPicture.asset(
+                            "${Constant.assetsSvg}$rightImgName",
+                          )
+                        : Image(
+                            image: AssetImage(
+                                "${Constant.assetsImages}$rightImgName"),
+                          )
+                    : Container(),
+                onTap: () {
+                  onRightImgTap?.call();
+                },
+              ),
             ),
           ),
         ],
