@@ -5,8 +5,11 @@ class DbHelper {
   // 数据库名称 一般不变
   final String _dbName = "good_weather.db";
 
-  // 数据库中的表名字 这里是我存错历史搜索记录的表
+  // 数据库中的表名字 这里是我存历史搜索记录的表
   static const provinceTab = "Province";
+
+  // 我的城市表
+  static const myCityTab = "MyCity";
 
   // 单例对象
   static final DbHelper _instance = DbHelper._internal();
@@ -32,11 +35,16 @@ class DbHelper {
   Future<Database> _initDb() async {
     // 这里是我们真正创建数据库的地方 version代表数据库的版本，如果版本改变
     //，则db会调用onUpgrade方法进行更新操作
-    final db = await openDatabase(_dbName, version: 1, onCreate: (db, version) {
+    final db =
+        await openDatabase(_dbName, version: 1, onCreate: (db, version) async {
       // 数据库创建完成
       // 创建表 一个自增id 一个text
-      return db.execute(
-          "CREATE TABLE $provinceTab (id INTEGER PRIMARY KEY autoincrement, name TEXT not null, city TEXT)");
+      await db.execute(
+        "CREATE TABLE $provinceTab (id INTEGER PRIMARY KEY autoincrement, name TEXT not null, city TEXT)",
+      );
+      await db.execute(
+        "CREATE TABLE $myCityTab (cityName TEXT PRIMARY KEY not null)",
+      );
     }, onUpgrade: (db, oldV, newV) {
       // 升级数据库调用
       // db 数据库

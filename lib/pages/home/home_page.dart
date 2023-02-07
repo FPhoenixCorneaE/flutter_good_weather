@@ -12,6 +12,7 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/meta/province.dart';
+import 'package:flutter_good_weather/navi.dart';
 import 'package:flutter_good_weather/pages/home/daily_detail_dialog.dart';
 import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
@@ -166,6 +167,7 @@ class _HomePageState extends State<HomePage> {
                             onTap: () async {
                               await cityDialogCloseFunction?.call();
                               if (index == 0) {
+                                // 切换城市
                                 Result? result =
                                     await CityPickers.showCityPicker(
                                   context: context,
@@ -180,6 +182,15 @@ class _HomePageState extends State<HomePage> {
                                 );
                                 cityResult = result;
                                 switchCity(result?.areaName);
+                              } else if (index == 1) {
+                                // 管理城市
+                                var result = await Navi().pushForResult(
+                                  context,
+                                  Navi.manageCityPage,
+                                );
+                                if (result != null) {
+                                  switchCity(result);
+                                }
                               }
                             },
                             child: Container(
