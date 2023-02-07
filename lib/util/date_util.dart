@@ -1,4 +1,4 @@
-/// 获取星期几
+/// 获取今天是星期几
 String getTodayOfWeek() {
   int weekday = DateTime.now().weekday;
   return [
@@ -13,6 +13,25 @@ String getTodayOfWeek() {
   ][weekday];
 }
 
+/// 获取某天是星期几
+String getDayOfWeek(String? datetimeStr) {
+  if (datetimeStr == null || datetimeStr.isEmpty) {
+    return "";
+  }
+  int weekday = DateTime.parse(datetimeStr).weekday;
+  return [
+    "",
+    "星期一",
+    "星期二",
+    "星期三",
+    "星期四",
+    "星期五",
+    "星期六",
+    "星期日",
+  ][weekday];
+}
+
+/// 获取更新时间
 String? updateTime(String? dateTime) {
   String? result;
   if (dateTime == null) {
@@ -499,7 +518,7 @@ bool isToday(String dateStr) {
 /// Example:
 ///     isLeapYear("2019")
 ///     // => false
-bool isLeapYear({String dateStr: ''}) {
+bool isLeapYear({String dateStr = ''}) {
   int _year = DateTime.now().year;
   if (dateStr.isNotEmpty) {
     _year = DateTime.parse(dateStr).year;

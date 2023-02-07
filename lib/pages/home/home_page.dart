@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.only(top: 100),
                 child: Text(
                   "${dailyWeatherBean?.daily?.first.tempMax}℃/${dailyWeatherBean?.daily?.first.tempMin}℃",
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               )),
           Container(
@@ -336,7 +336,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     divideTime(
                         updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
-                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   // 气候图标
                   Image(
@@ -347,7 +347,7 @@ class _HomePageState extends State<HomePage> {
                   // 温度
                   Text(
                     "${hourlyWeatherBean?.hourly?[index].temp}℃",
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],
               ),
@@ -380,6 +380,8 @@ class _HomePageState extends State<HomePage> {
   SliverFixedExtentList buildDailyWeather() {
     return SliverFixedExtentList(
         delegate: SliverChildBuilderDelegate((context, index) {
+          final fxDate = dailyWeatherBean?.daily?[index].fxDate ?? "";
+          String friendlyTime = "$fxDate ${getDayOfWeek(fxDate)}";
           return Container(
             margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
             child: GestureDetector(
@@ -389,8 +391,8 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   // 时间
                   Text(
-                    dailyWeatherBean?.daily?[index].fxDate ?? "",
-                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                    friendlyTime,
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   // 气候图标
                   Image(
@@ -404,7 +406,7 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.centerRight,
                     child: Text(
                       "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],

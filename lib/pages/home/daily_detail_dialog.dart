@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
+import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constant/constant.dart';
@@ -68,7 +69,7 @@ class DailyDetailDialog extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   margin: const EdgeInsets.only(top: 8),
                   child: Text(
-                    "${daily?.fxDate}",
+                    "${daily?.fxDate} ${getDayOfWeek(daily?.fxDate)}",
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 18,
