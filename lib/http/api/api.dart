@@ -10,5 +10,5 @@ class Api {
   static const baseUrlBing = "https://cn.bing.com";
 
   // 和风天气的KEY，请使用自己的
-  static String apiKey = "d4a619bfe3244190bfa84bb468c14316";
+  static String apiKey = "8d3d5b55abb84ea5a26cbc457edd625e";
 }

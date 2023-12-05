@@ -85,6 +85,9 @@ class _SplashPageState extends State<SplashPage> with WidgetsBindingObserver {
           );
         }
       },
+      width: double.infinity,
+      height: double.infinity,
+      fit: BoxFit.cover,
     );
   }
 
