@@ -76,6 +76,12 @@ dependencies:
   # 偏好数据存储：https://pub.flutter-io.cn/packages/shared_preferences
   shared_preferences: ^2.0.17
 
+  # 定位：https://pub-web.flutter-io.cn/packages/geolocator
+  geolocator: ^10.1.0
+
+  # 坐标和地址互转：https://pub-web.flutter-io.cn/packages/geocode
+  geocode: 1.0.3
+
 
 dev_dependencies:
   flutter_test:

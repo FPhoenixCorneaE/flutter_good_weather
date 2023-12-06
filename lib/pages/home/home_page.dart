@@ -17,15 +17,18 @@ import 'package:flutter_good_weather/pages/home/daily_detail_dialog.dart';
 import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
+import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
 import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
+import 'package:geocode/geocode.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-
 import '../../constant/constant.dart';
+import '../../util/log_util.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -53,8 +56,13 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       appBar: TitleBar(
         cityName ?? "城市天气",
-        rightImgName: "ic_add.svg",
+        rightImgName: "ic_round_location_24.svg",
+        rightImg2Name: "ic_add.svg",
         onRightImgTap: () {
+          // 定位
+          location();
+        },
+        onRightImg2Tap: () {
           // 显示城市弹窗
           showCityDialog(context);
         },
@@ -109,6 +117,50 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /// 定位
+  void location() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      bool serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      await Geolocator.openAppSettings();
+      return;
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    Position position =
+        await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best, forceAndroidLocationManager: true);
+    LogUtil.d("定位成功：$position");
+    Address address = await GeoCode().reverseGeocoding(latitude: position.latitude, longitude: position.longitude);
+    if (address.city != null && address.city?.startsWith("Throttled") == false) {
+      cityName = address.city;
+      _onRefresh();
+    }
+  }
+
   /// 显示城市弹窗
   void showCityDialog(BuildContext context) {
     // 弹窗宽度
@@ -123,8 +175,7 @@ class _HomePageState extends State<HomePage> {
         child: ZoomInDialog(
           right: 10,
           top: navigationBarHeight - 10,
-          offset: Offset(dialogWidth / 2,
-              -(cellHeight * dataList.length + upArrowHeight) / 2),
+          offset: Offset(dialogWidth / 2, -(cellHeight * dataList.length + upArrowHeight) / 2),
           fun: (close) {
             cityDialogCloseFunction = close;
           },
@@ -168,8 +219,7 @@ class _HomePageState extends State<HomePage> {
                               await cityDialogCloseFunction?.call();
                               if (index == 0) {
                                 // 切换城市
-                                Result? result =
-                                    await CityPickers.showCityPicker(
+                                Result? result = await CityPickers.showCityPicker(
                                   context: context,
                                   theme: ThemeData.light(useMaterial3: true),
                                   locationCode: cityResult?.areaId ?? "110000",
@@ -207,11 +257,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                      separatorBuilder: (context, index) => const Divider(
-                          height: .1,
-                          indent: 50,
-                          endIndent: 0,
-                          color: Color(0xFFE6E6E6)),
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: .1, indent: 50, endIndent: 0, color: Color(0xFFE6E6E6)),
                     ),
                   ),
                 ),
@@ -250,10 +297,7 @@ class _HomePageState extends State<HomePage> {
                     margin: const EdgeInsets.only(top: 8, right: 8),
                     child: Text(
                       liveWeatherBean?.now?.temp ?? "",
-                      style: const TextStyle(
-                          fontSize: 60,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
+                      style: const TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.w400),
                     )),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -293,13 +337,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      children: const [
-                        Image(
-                            width: 20,
-                            height: 20,
-                            image: AssetImage(
-                                "${Constant.assetsImages}ic_weather_sun.png")),
+                    const Row(
+                      children: [
+                        Image(width: 20, height: 20, image: AssetImage("${Constant.assetsImages}ic_weather_sun.png")),
                         Text(
                           "好天气",
                           style: TextStyle(color: Colors.white, fontSize: 12),
@@ -350,8 +390,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     // 时间
                     Text(
-                      divideTime(
-                          updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
+                      divideTime(updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
                       style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     // 气候图标
@@ -373,8 +412,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                     barrierDismissible: true,
                     builder: (context) {
-                      return HourlyDetailDialog(
-                          hourlyWeatherBean?.hourly?[index]);
+                      return HourlyDetailDialog(hourlyWeatherBean?.hourly?[index]);
                     },
                   );
                 },
@@ -428,8 +466,7 @@ class _HomePageState extends State<HomePage> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.white),
+                        style: const TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ],
@@ -489,11 +526,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     customColors: CustomSliderColors(
                       trackColor: Colors.grey,
-                      progressBarColors: [
-                        Colors.pink,
-                        Colors.yellow,
-                        Colors.blue
-                      ],
+                      progressBarColors: [Colors.pink, Colors.yellow, Colors.blue],
                       shadowColor: Colors.white,
                       shadowMaxOpacity: 0.05,
                       dotColor: Colors.transparent,
@@ -506,10 +539,7 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 24,
                         fontWeight: FontWeight.w400,
                       ),
-                      mainLabelStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w400),
+                      mainLabelStyle: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w400),
                       modifier: (value) {
                         return "${value.toInt()}";
                       },
@@ -533,41 +563,35 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 138,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         "PM10",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                       Text(
                         "PM2.5",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                       Text(
                         "NO₂",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                       Text(
                         "SO₂",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                       Text(
                         "O₃",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                       Text(
                         "CO",
-                        style:
-                            TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
+                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
                       ),
                     ],
                   ),
@@ -581,38 +605,32 @@ class _HomePageState extends State<HomePage> {
                       // PM10
                       Text(
                         airQualityBean?.now?.pm10 ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       // PM2.5
                       Text(
                         airQualityBean?.now?.pm2p5 ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       // 二氧化氮
                       Text(
                         airQualityBean?.now?.no2 ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       // 二氧化硫
                       Text(
                         airQualityBean?.now?.so2 ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       // 臭氧
                       Text(
                         airQualityBean?.now?.o3 ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                       // 一氧化碳
                       Text(
                         airQualityBean?.now?.co ?? "",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
@@ -682,8 +700,7 @@ class _HomePageState extends State<HomePage> {
       delegate: SliverChildListDelegate(
         List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
           return Container(
-            margin:
-                const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 8),
+            margin: const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 8),
             child: Text(
               "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text ?? lifeIndexBean?.daily?[index].category}",
               style: const TextStyle(color: Colors.white, fontSize: 14),
@@ -720,8 +737,7 @@ class _HomePageState extends State<HomePage> {
       cityName = name;
     });
     searchCity();
-    SharedPreferences.getInstance()
-        .then((value) => value.setString(Constant.city, name));
+    SharedPreferences.getInstance().then((value) => value.setString(Constant.city, name));
   }
 
   /// 搜索城市  模糊搜索，国内范围 返回10条数据
@@ -769,8 +785,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 逐小时天气预报 未来24小时
   void hourlyWeather(String id) {
-    HttpClient.getInstance()
-        .get("/v7/weather/24h?key=${Api.apiKey}", queryParameters: {
+    HttpClient.getInstance().get("/v7/weather/24h?key=${Api.apiKey}", queryParameters: {
       "location": id,
     }).then((value) {
       setState(() {
@@ -781,8 +796,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 逐日天气预报 (免费订阅)最多可以获得7天的数据
   void dailyWeather(String id) {
-    HttpClient.getInstance()
-        .get("/v7/weather/7d?key=${Api.apiKey}", queryParameters: {
+    HttpClient.getInstance().get("/v7/weather/7d?key=${Api.apiKey}", queryParameters: {
       "location": id,
     }).then((value) {
       setState(() {
@@ -793,8 +807,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 当天空气质量
   void airQuality(String id) {
-    HttpClient.getInstance()
-        .get("/v7/air/now?key=${Api.apiKey}", queryParameters: {
+    HttpClient.getInstance().get("/v7/air/now?key=${Api.apiKey}", queryParameters: {
       "location": id,
     }).then((value) {
       setState(() {
@@ -810,8 +823,7 @@ class _HomePageState extends State<HomePage> {
   /// 感冒指数 9, 空气污染扩散条件指数	10, 空调开启指数 11, 太阳镜指数 12,
   /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
   void lifeIndex(String id) {
-    HttpClient.getInstance()
-        .get("/v7/indices/1d?key=${Api.apiKey}", queryParameters: {
+    HttpClient.getInstance().get("/v7/indices/1d?key=${Api.apiKey}", queryParameters: {
       "type": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
       "location": id,
     }).then((value) {

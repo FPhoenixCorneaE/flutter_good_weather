@@ -12,7 +12,9 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   final String? leftImgName;
   final GestureTapCallback? onLeftImgTap;
   final String? rightImgName;
+  final String? rightImg2Name;
   final GestureTapCallback? onRightImgTap;
+  final GestureTapCallback? onRightImg2Tap;
 
   const TitleBar(
     this.title, {
@@ -22,7 +24,9 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
     this.leftImgName,
     this.onLeftImgTap,
     this.rightImgName,
+    this.rightImg2Name,
     this.onRightImgTap,
+    this.onRightImg2Tap,
   }) : super(key: key);
 
   @override
@@ -63,8 +67,7 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                             "${Constant.assetsSvg}$leftImgName",
                           )
                         : Image(
-                            image: AssetImage(
-                                "${Constant.assetsImages}$leftImgName"),
+                            image: AssetImage("${Constant.assetsImages}$leftImgName"),
                           )
                     : Container(),
                 onTap: () {
@@ -74,7 +77,7 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           Positioned(
-            right: 20,
+            right: 68,
             width: 32,
             height: 32,
             child: Material(
@@ -89,12 +92,36 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                             "${Constant.assetsSvg}$rightImgName",
                           )
                         : Image(
-                            image: AssetImage(
-                                "${Constant.assetsImages}$rightImgName"),
+                            image: AssetImage("${Constant.assetsImages}$rightImgName"),
                           )
                     : Container(),
                 onTap: () {
                   onRightImgTap?.call();
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            right: 20,
+            width: 32,
+            height: 32,
+            child: Material(
+              // 背景色
+              color: Colors.transparent,
+              child: InkWell(
+                // shape圆角半径
+                borderRadius: BorderRadius.circular(16),
+                child: rightImg2Name != null
+                    ? rightImg2Name!.endsWith(".svg")
+                        ? SvgPicture.asset(
+                            "${Constant.assetsSvg}$rightImg2Name",
+                          )
+                        : Image(
+                            image: AssetImage("${Constant.assetsImages}$rightImg2Name"),
+                          )
+                    : Container(),
+                onTap: () {
+                  onRightImg2Tap?.call();
                 },
               ),
             ),
@@ -105,6 +132,5 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size(window.physicalSize.width,
-      MediaQueryData.fromWindow(window).padding.top + 40.0);
+  Size get preferredSize => Size(window.physicalSize.width, MediaQueryData.fromWindow(window).padding.top + 40.0);
 }
