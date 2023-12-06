@@ -23,7 +23,7 @@ import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
-import 'package:geocode/geocode.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
@@ -142,23 +142,20 @@ class _HomePageState extends State<HomePage> {
         return;
       }
     }
-
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
       await Geolocator.openAppSettings();
       return;
     }
-
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     Position position =
         await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best, forceAndroidLocationManager: true);
     LogUtil.d("定位成功：$position");
-    Address address = await GeoCode().reverseGeocoding(latitude: position.latitude, longitude: position.longitude);
-    if (address.city != null && address.city?.startsWith("Throttled") == false) {
-      cityName = address.city;
-      _onRefresh();
-    }
+    List<Placemark> placemark = await placemarkFromCoordinates(position.latitude, position.longitude);
+    LogUtil.d("定位成功：$placemark");
+    cityName = placemark[0].subLocality;
+    _onRefresh();
   }
 
   /// 显示城市弹窗

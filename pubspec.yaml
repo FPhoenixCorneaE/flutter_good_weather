@@ -79,8 +79,8 @@ dependencies:
   # 定位：https://pub-web.flutter-io.cn/packages/geolocator
   geolocator: ^10.1.0
 
-  # 坐标和地址互转：https://pub-web.flutter-io.cn/packages/geocode
-  geocode: 1.0.3
+  # 坐标和地址互转：https://pub-web.flutter-io.cn/packages/geocoding
+  geocoding: ^2.1.1
 
 
 dev_dependencies:
