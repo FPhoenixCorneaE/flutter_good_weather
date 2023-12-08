@@ -318,8 +318,7 @@ const String z = 'z';
 const String Z = 'Z';
 
 String formatDateByMs(int microseconds, {List<String>? formats}) {
-  return formatDate(DateTime.fromMillisecondsSinceEpoch(microseconds),
-      formats: formats);
+  return formatDate(DateTime.fromMillisecondsSinceEpoch(microseconds), formats: formats);
 }
 
 String formatDateByStr(String datetimeStr, {List<String>? formats}) {
@@ -456,52 +455,15 @@ const List<String> monthLong = <String>[
   'December'
 ];
 
-const List<String> monthZH = <String>[
-  '正月',
-  '二月',
-  '三月',
-  '四月',
-  '五月',
-  '六月',
-  '七月',
-  '八月',
-  '九月',
-  '十月',
-  '冬月',
-  '腊月'
-];
+const List<String> monthZH = <String>['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月'];
 
-const List<String> dayShort = [
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thur',
-  'Fri',
-  'Sat',
-  'Sun'
-];
+const List<String> dayShort = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
 
-const List<String> dayLong = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday'
-];
+const List<String> dayLong = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const List<String> dayShortZH = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
 
-const List<String> dayLongZH = [
-  '星期一',
-  '星期二',
-  '星期三',
-  '星期四',
-  '星期五',
-  '星期六',
-  '星期日'
-];
+const List<String> dayLongZH = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 
 int dayInYear(DateTime date) => date.difference(DateTime(date.year)).inDays;
 
@@ -525,6 +487,23 @@ bool isLeapYear({String dateStr = ''}) {
     _year = DateTime.now().year;
   }
   return (_year % 4 == 0 && _year % 100 != 0) || _year % 400 == 0;
+}
+
+/// 根据年月日计算是星期几并与当前日期判断  非昨天、今天、明天 则以星期显示
+String friendlyWeekDay(String datetime) {
+  String friendly = "";
+  int todayInYear = dayInYear(DateTime.now());
+  int dateInYear = dayInYear(DateTime.parse(datetime));
+  if (todayInYear - dateInYear == 1) {
+    friendly = "昨天";
+  } else if (todayInYear - dateInYear == 0) {
+    friendly = "今天";
+  } else if (todayInYear - dateInYear == -1) {
+    friendly = "明天";
+  } else {
+    friendly = getDayOfWeek(datetime);
+  }
+  return friendly;
 }
 
 /// 友好式时间展示
@@ -566,8 +545,7 @@ String friendlyDateTime(String datetime) {
     friendly = '$weeks周$agoOrAfter';
   } else if (seconds >= 60 * 60 * 24 * 30 && seconds < 60 * 60 * 24 * 30 * 6) {
     friendly = '$mounts月$agoOrAfter';
-  } else if (seconds >= 60 * 60 * 24 * 30 * 6 &&
-      seconds < 60 * 60 * 24 * 30 * 12) {
+  } else if (seconds >= 60 * 60 * 24 * 30 * 6 && seconds < 60 * 60 * 24 * 30 * 12) {
     friendly = '半年$agoOrAfter';
   } else {
     friendly = formatDateByStr(datetime, formats: [yyyy, '-', mm, '-', dd]);
@@ -601,8 +579,7 @@ int getAge(String birthday) {
 ///获取剩余时间单位：秒
 ///startTime 开始时间
 /// spaceMillSeconds  间隔时间单位：毫秒
-int getRemainderTime(
-    {required String startTime, int spaceMillSeconds = 30 * 60 * 1000}) {
+int getRemainderTime({required String startTime, int spaceMillSeconds = 30 * 60 * 1000}) {
   //当前时间
   DateTime today = DateTime.now();
   int currentTimeM = today.millisecondsSinceEpoch;

@@ -17,16 +17,17 @@ import 'package:flutter_good_weather/pages/home/daily_detail_dialog.dart';
 import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
-import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
 import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+
 import '../../constant/constant.dart';
 import '../../util/log_util.dart';
 
@@ -40,6 +41,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? cityName = "东城区";
+
+  // 获取空气质量监测站数据会用到
+  String? adm2;
   SearchCityBean? searchCityBean;
   LiveWeatherBean? liveWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
@@ -73,10 +77,11 @@ class _HomePageState extends State<HomePage> {
         child: Stack(
           children: <Widget>[
             const Positioned.fill(
-                child: Image(
-              image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
-              fit: BoxFit.cover,
-            )),
+              child: Image(
+                image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
+                fit: BoxFit.cover,
+              ),
+            ),
             Container(
               margin: EdgeInsets.only(top: navigationBarHeight),
               child: CustomScrollView(
@@ -154,8 +159,7 @@ class _HomePageState extends State<HomePage> {
     LogUtil.d("定位成功：$position");
     List<Placemark> placemark = await placemarkFromCoordinates(position.latitude, position.longitude);
     LogUtil.d("定位成功：$placemark");
-    cityName = placemark[0].subLocality;
-    _onRefresh();
+    switchCity(placemark[0].subLocality);
   }
 
   /// 显示城市弹窗
@@ -214,6 +218,9 @@ class _HomePageState extends State<HomePage> {
                           child: InkWell(
                             onTap: () async {
                               await cityDialogCloseFunction?.call();
+                              if (!mounted) {
+                                return;
+                              }
                               if (index == 0) {
                                 // 切换城市
                                 Result? result = await CityPickers.showCityPicker(
@@ -491,10 +498,44 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 20),
-            child: const Text(
-              "空气质量",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+            margin: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "空气质量",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                InkWell(
+                  child: Text.rich(
+                    TextSpan(
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      children: [
+                        const TextSpan(text: "更多"),
+                        WidgetSpan(
+                          child: RotatedBox(
+                            quarterTurns: 2,
+                            child: SvgPicture.asset(
+                              "${Constant.assetsSvg}ic_back_black.svg",
+                              width: 16,
+                              height: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    Navi.push(
+                      context,
+                      Navi.moreAirQualityPage,
+                      params: {"adm2": adm2, "location": cityName},
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           Container(
@@ -752,6 +793,7 @@ class _HomePageState extends State<HomePage> {
       });
       // 城市id
       var id = searchCityBean?.location?.first.id;
+      adm2 = searchCityBean?.location?.first.adm2;
       if (id != null) {
         // 实时天气
         liveWeatherNow(id);

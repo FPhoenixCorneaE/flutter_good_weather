@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/pages/airquality/more_air_quality_page.dart';
 import 'package:flutter_good_weather/pages/city/manage_city_page.dart';
 import 'package:flutter_good_weather/pages/home/home_page.dart';
 
@@ -6,6 +7,7 @@ import 'package:flutter_good_weather/pages/home/home_page.dart';
 class Navi {
   static const homePage = "app://HomePage";
   static const manageCityPage = "app://ManageCityPage";
+  static const moreAirQualityPage = "app://MoreAirQualityPage";
 
   Navi();
 
@@ -15,6 +17,12 @@ class Navi {
         return const HomePage();
       case manageCityPage:
         return const ManageCityPage();
+      case moreAirQualityPage:
+        Map<String, dynamic> paramsMap = params as Map<String, dynamic>;
+        return MoreAirQualityPage(
+          (paramsMap["adm2"] as String?) ?? "",
+          (paramsMap["location"] as String?) ?? "",
+        );
     }
     return Container();
   }

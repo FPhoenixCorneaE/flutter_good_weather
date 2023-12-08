@@ -7,12 +7,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// 自定义标题栏
 class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
+  final double titleBarHeight;
   final String title;
   final Color? titleColor;
+  final double titleSize;
   final String? leftImgName;
+  final Color? leftImgColor;
   final GestureTapCallback? onLeftImgTap;
   final String? rightImgName;
+  final Color? rightImgColor;
   final String? rightImg2Name;
+  final Color? rightImg2Color;
   final GestureTapCallback? onRightImgTap;
   final GestureTapCallback? onRightImg2Tap;
 
@@ -20,11 +25,16 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
     this.title, {
     Key? key,
     this.backgroundColor = Colors.transparent,
+    this.titleBarHeight = 36.0,
     this.titleColor = Colors.white,
+    this.titleSize = 18.0,
     this.leftImgName,
+    this.leftImgColor,
     this.onLeftImgTap,
     this.rightImgName,
+    this.rightImgColor,
     this.rightImg2Name,
+    this.rightImg2Color,
     this.onRightImgTap,
     this.onRightImg2Tap,
   }) : super(key: key);
@@ -48,7 +58,7 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             alignment: Alignment.center,
             child: Text(
               title,
-              style: TextStyle(fontSize: 24, color: titleColor),
+              style: TextStyle(fontSize: titleSize, color: titleColor),
             ),
           ),
           Positioned(
@@ -65,9 +75,11 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                     ? leftImgName!.endsWith(".svg")
                         ? SvgPicture.asset(
                             "${Constant.assetsSvg}$leftImgName",
+                            color: leftImgColor,
                           )
                         : Image(
                             image: AssetImage("${Constant.assetsImages}$leftImgName"),
+                            color: leftImgColor,
                           )
                     : Container(),
                 onTap: () {
@@ -90,9 +102,11 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                     ? rightImgName!.endsWith(".svg")
                         ? SvgPicture.asset(
                             "${Constant.assetsSvg}$rightImgName",
+                            color: rightImgColor,
                           )
                         : Image(
                             image: AssetImage("${Constant.assetsImages}$rightImgName"),
+                            color: rightImgColor,
                           )
                     : Container(),
                 onTap: () {
@@ -115,9 +129,11 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                     ? rightImg2Name!.endsWith(".svg")
                         ? SvgPicture.asset(
                             "${Constant.assetsSvg}$rightImg2Name",
+                            color: rightImg2Color,
                           )
                         : Image(
                             image: AssetImage("${Constant.assetsImages}$rightImg2Name"),
+                            color: rightImg2Color,
                           )
                     : Container(),
                 onTap: () {
@@ -132,5 +148,6 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size(window.physicalSize.width, MediaQueryData.fromWindow(window).padding.top + 40.0);
+  Size get preferredSize =>
+      Size(window.physicalSize.width, MediaQueryData.fromWindow(window).padding.top + titleBarHeight);
 }
