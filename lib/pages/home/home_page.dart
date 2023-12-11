@@ -329,7 +329,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 margin: const EdgeInsets.only(top: 100),
                 child: Text(
-                  "${dailyWeatherBean?.daily?.first.tempMax}℃/${dailyWeatherBean?.daily?.first.tempMin}℃",
+                  "${dailyWeatherBean?.daily?.first.tempMax ?? "-"}℃/${dailyWeatherBean?.daily?.first.tempMin ?? "-"}℃",
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               )),
@@ -469,7 +469,7 @@ class _HomePageState extends State<HomePage> {
                       width: 100,
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "${dailyWeatherBean?.daily?[index].tempMax}℃/${dailyWeatherBean?.daily?[index].tempMin}℃",
+                        "${dailyWeatherBean?.daily?[index].tempMax ?? "-"}℃/${dailyWeatherBean?.daily?[index].tempMin ?? "-"}℃",
                         style: const TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
