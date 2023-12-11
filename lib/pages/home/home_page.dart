@@ -8,9 +8,9 @@ import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/life_index_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
+import 'package:flutter_good_weather/bean/minutely_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
-import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/meta/province.dart';
 import 'package:flutter_good_weather/navi.dart';
 import 'package:flutter_good_weather/pages/home/daily_detail_dialog.dart';
@@ -18,6 +18,7 @@ import 'package:flutter_good_weather/pages/home/hourly_detail_dialog.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
 import 'package:flutter_good_weather/util/weather_util.dart';
+import 'package:flutter_good_weather/widget/icon_text.dart';
 import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
@@ -46,12 +47,14 @@ class _HomePageState extends State<HomePage> {
   String? adm2;
   SearchCityBean? searchCityBean;
   LiveWeatherBean? liveWeatherBean;
+  MinutelyWeatherBean? minutelyWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
   DailyWeatherBean? dailyWeatherBean;
   AirQualityBean? airQualityBean;
   LifeIndexBean? lifeIndexBean;
   Function? cityDialogCloseFunction;
   Result? cityResult;
+  bool isExpandedPrecip = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +95,8 @@ class _HomePageState extends State<HomePage> {
                   const SliverPadding(padding: EdgeInsets.only(top: 20)),
                   // 实时天气
                   buildWeatherCondition(),
+                  // 未来2小时每5分钟降雨预报
+                  buildMinutelyWeather(),
                   // 逐小时天气预报列表
                   buildHourlyWeather(),
                   // 逐日天气预报列表
@@ -365,8 +370,99 @@ class _HomePageState extends State<HomePage> {
             child: const Divider(
               color: Colors.white,
             ),
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  /// 未来2小时每5分钟降雨预报
+  SliverToBoxAdapter buildMinutelyWeather() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconText(
+                  minutelyWeatherBean?.summary,
+                  icon: SvgPicture.asset(
+                    "${Constant.assetsSvg}ic_rain.svg",
+                    width: 16,
+                    height: 16,
+                  ),
+                  padding: const EdgeInsets.all(4),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+                IconText(
+                  "查看详情",
+                  icon: RotatedBox(
+                    quarterTurns: 2,
+                    child: SvgPicture.asset(
+                      "${Constant.assetsSvg}ic_back_black.svg",
+                      width: 16,
+                      height: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  afterIcon: false,
+                  onTap: () {
+                    setState(() {
+                      isExpandedPrecip = !isExpandedPrecip;
+                    });
+                  },
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: Container(),
+              secondChild: Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: double.infinity,
+                height: 120,
+                child: GridView.builder(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: minutelyWeatherBean?.minutely?.length ?? 0,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    // 列数
+                    crossAxisCount: 2,
+                    // 主轴方向上的空隙间距
+                    mainAxisSpacing: 8,
+                    // 次轴方向上的空隙间距
+                    crossAxisSpacing: 0,
+                    childAspectRatio: 0.88,
+                  ),
+                  itemBuilder: (context, index) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          divideTime(updateTime(minutelyWeatherBean?.minutely?[index].fxTime)),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${minutelyWeatherBean?.minutely?[index].precip ?? ""}  ${minutelyWeatherBean?.minutely?[index].type == "snow" ? "雪" : "雨"}",
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                        )
+                      ],
+                    );
+                  },
+                ),
+              ),
+              crossFadeState: isExpandedPrecip ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 400),
+            ),
+            // 分割线
+            const Divider(color: Colors.white),
+          ],
+        ),
       ),
     );
   }
@@ -375,7 +471,7 @@ class _HomePageState extends State<HomePage> {
   SliverToBoxAdapter buildHourlyWeather() {
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
+        margin: const EdgeInsets.only(left: 20, right: 20),
         height: 100,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
@@ -507,26 +603,19 @@ class _HomePageState extends State<HomePage> {
                   "空气质量",
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
-                InkWell(
-                  child: Text.rich(
-                    TextSpan(
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      children: [
-                        const TextSpan(text: "更多"),
-                        WidgetSpan(
-                          child: RotatedBox(
-                            quarterTurns: 2,
-                            child: SvgPicture.asset(
-                              "${Constant.assetsSvg}ic_back_black.svg",
-                              width: 16,
-                              height: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                IconText(
+                  "更多",
+                  icon: RotatedBox(
+                    quarterTurns: 2,
+                    child: SvgPicture.asset(
+                      "${Constant.assetsSvg}ic_back_black.svg",
+                      width: 16,
+                      height: 16,
+                      color: Colors.white,
                     ),
                   ),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  afterIcon: false,
                   onTap: () {
                     Navi.push(
                       context,
@@ -783,20 +872,19 @@ class _HomePageState extends State<HomePage> {
     if (cityName == null) {
       return;
     }
-    HttpClient.getInstance()
-        .resetBaseUrl(Api.baseUrlSearch)
-        .get("/v2/city/lookup?key=${Api.apiKey}&range=cn", queryParameters: {
-      "location": cityName,
-    }).then((value) {
+    Api.searchCity(cityName!, callback: (data) {
       setState(() {
-        searchCityBean = SearchCityBean.fromJson(value.data);
+        searchCityBean = data;
       });
+      var location = searchCityBean?.location?.first;
       // 城市id
-      var id = searchCityBean?.location?.first.id;
-      adm2 = searchCityBean?.location?.first.adm2;
+      var id = location?.id;
+      adm2 = location?.adm2;
       if (id != null) {
         // 实时天气
         liveWeatherNow(id);
+        // 未来2小时每5分钟降雨预报
+        minutelyWeather("${location!.lon},${location.lat}");
         // 逐小时天气预报
         hourlyWeather(id);
         // 逐日天气预报
@@ -811,63 +899,54 @@ class _HomePageState extends State<HomePage> {
 
   /// 实时天气
   void liveWeatherNow(String id) {
-    HttpClient.getInstance()
-        .resetBaseUrl(Api.baseUrlWeather)
-        .get("/v7/weather/now?key=${Api.apiKey}", queryParameters: {
-      "location": id,
-    }).then((value) {
+    Api.liveWeatherNow(id, callback: (data) {
       setState(() {
-        liveWeatherBean = LiveWeatherBean.fromJson(value.data);
+        liveWeatherBean = data;
+      });
+    });
+  }
+
+  /// 未来2小时每5分钟降雨预报
+  void minutelyWeather(String id) {
+    Api.minutelyWeather(id, callback: (data) {
+      setState(() {
+        minutelyWeatherBean = data;
       });
     });
   }
 
   /// 逐小时天气预报 未来24小时
   void hourlyWeather(String id) {
-    HttpClient.getInstance().get("/v7/weather/24h?key=${Api.apiKey}", queryParameters: {
-      "location": id,
-    }).then((value) {
+    Api.hourlyWeather(id, callback: (data) {
       setState(() {
-        hourlyWeatherBean = HourlyWeatherBean.fromJson(value.data);
+        hourlyWeatherBean = data;
       });
     });
   }
 
   /// 逐日天气预报 (免费订阅)最多可以获得7天的数据
   void dailyWeather(String id) {
-    HttpClient.getInstance().get("/v7/weather/7d?key=${Api.apiKey}", queryParameters: {
-      "location": id,
-    }).then((value) {
+    Api.dailyWeather(id, callback: (data) {
       setState(() {
-        dailyWeatherBean = DailyWeatherBean.fromJson(value.data);
+        dailyWeatherBean = data;
       });
     });
   }
 
   /// 当天空气质量
   void airQuality(String id) {
-    HttpClient.getInstance().get("/v7/air/now?key=${Api.apiKey}", queryParameters: {
-      "location": id,
-    }).then((value) {
+    Api.airQualityNow(id, callback: (data) {
       setState(() {
-        airQualityBean = AirQualityBean.fromJson(value.data);
+        airQualityBean = data;
       });
     });
   }
 
   /// 生活指数
-  /// 可以控制定向获取那几项数据
-  /// 全部数据 0, 运动指数	1, 洗车指数	 2, 穿衣指数 3,
-  /// 钓鱼指数 4, 紫外线指数 5, 旅游指数 6, 花粉过敏指数 7, 舒适度指数 8,
-  /// 感冒指数 9, 空气污染扩散条件指数	10, 空调开启指数 11, 太阳镜指数 12,
-  /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
   void lifeIndex(String id) {
-    HttpClient.getInstance().get("/v7/indices/1d?key=${Api.apiKey}", queryParameters: {
-      "type": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
-      "location": id,
-    }).then((value) {
+    Api.lifeIndex(id, callback: (data) {
       setState(() {
-        lifeIndexBean = LifeIndexBean.fromJson(value.data);
+        lifeIndexBean = data;
       });
     });
   }
