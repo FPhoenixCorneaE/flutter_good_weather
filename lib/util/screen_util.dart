@@ -6,7 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 /// 屏幕适配
 initScreen(BuildContext context) {
   // 假如设计稿是按iPhone6的尺寸设计的(iPhone6 750*1334)
-  ScreenUtil.init(context, designSize: const Size(750, 1334));
+  ScreenUtil.init(context, designSize: const Size(750, 1334), splitScreenMode: true, minTextAdapt: true);
 }
 
 setWidth(double width) {

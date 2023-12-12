@@ -23,6 +23,7 @@ import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       body: RefreshIndicator(
-        displacement: 120,
+        displacement: 120.h,
         onRefresh: _onRefresh,
         child: Stack(
           children: <Widget>[
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                 shrinkWrap: false,
                 // 内容
                 slivers: <Widget>[
-                  const SliverPadding(padding: EdgeInsets.only(top: 20)),
+                  SliverPadding(padding: EdgeInsets.only(top: 20.h)),
                   // 实时天气
                   buildWeatherCondition(),
                   // 未来2小时每5分钟降雨预报
@@ -108,16 +109,16 @@ class _HomePageState extends State<HomePage> {
                   // 生活指数
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: const EdgeInsets.only(left: 20, top: 20),
-                      child: const Text(
+                      margin: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Text(
                         "生活指数",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 18.sp),
                       ),
                     ),
                   ),
-                  const SliverPadding(padding: EdgeInsets.only(top: 8)),
+                  SliverPadding(padding: EdgeInsets.only(top: 8.h)),
                   buildLifeIndex(),
-                  const SliverPadding(padding: EdgeInsets.only(top: 20)),
+                  SliverPadding(padding: EdgeInsets.only(top: 20.h)),
                 ],
               ),
             )
@@ -286,11 +287,11 @@ class _HomePageState extends State<HomePage> {
         children: [
           // 星期几
           Positioned(
-              left: 20,
-              top: 8,
+              left: 20.w,
+              top: 8.h,
               child: Text(
                 getTodayOfWeek(),
-                style: const TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(fontSize: 18.sp, color: Colors.white),
               )),
           // 温度
           Align(
@@ -303,10 +304,10 @@ class _HomePageState extends State<HomePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                    margin: const EdgeInsets.only(top: 8, right: 8),
+                    margin: EdgeInsets.only(top: 8.h, right: 8.w),
                     child: Text(
                       liveWeatherBean?.now?.temp ?? "",
-                      style: const TextStyle(fontSize: 60, color: Colors.white, fontWeight: FontWeight.w400),
+                      style: TextStyle(fontSize: 60.sp, color: Colors.white, fontWeight: FontWeight.w400),
                     )),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -314,14 +315,14 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 摄氏度符号
-                    const Text(
+                    Text(
                       "℃",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(fontSize: 20.sp, color: Colors.white),
                     ),
                     // 天气状况
                     Text(
                       liveWeatherBean?.now?.text ?? "",
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(fontSize: 20.sp, color: Colors.white),
                     ),
                   ],
                 )
@@ -332,32 +333,38 @@ class _HomePageState extends State<HomePage> {
           Align(
               alignment: FractionalOffset.topCenter,
               child: Container(
-                margin: const EdgeInsets.only(top: 100),
+                margin: EdgeInsets.only(top: 100.h),
                 child: Text(
                   "${dailyWeatherBean?.daily?.first.tempMax ?? "-"}℃/${dailyWeatherBean?.daily?.first.tempMin ?? "-"}℃",
-                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
                 ),
               )),
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 148, right: 20),
+            margin: EdgeInsets.only(left: 20.w, top: 148.h, right: 20.w),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Row(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image(width: 20, height: 20, image: AssetImage("${Constant.assetsImages}ic_weather_sun.png")),
+                        Image(
+                            width: 20.w,
+                            height: 20.w,
+                            image: const AssetImage("${Constant.assetsImages}ic_weather_sun.png")),
+                        SizedBox(width: 4.w),
                         Text(
                           "好天气",
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                          style: TextStyle(color: Colors.white, fontSize: 14.sp),
                         )
                       ],
                     ),
                     Text(
                       "最近更新时间：${divideTime(updateTime(liveWeatherBean?.updateTime))}",
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                      style: TextStyle(color: Colors.white, fontSize: 12.sp),
                     )
                   ],
                 )
@@ -366,10 +373,8 @@ class _HomePageState extends State<HomePage> {
           ),
           // 分割线
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 180, right: 20),
-            child: const Divider(
-              color: Colors.white,
-            ),
+            margin: EdgeInsets.only(left: 20.w, top: 180.h, right: 20.w),
+            child: Divider(color: Colors.white, thickness: 0.5.h),
           ),
         ],
       ),
@@ -380,7 +385,7 @@ class _HomePageState extends State<HomePage> {
   SliverToBoxAdapter buildMinutelyWeather() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
         child: Column(
           children: [
             Row(
@@ -391,11 +396,11 @@ class _HomePageState extends State<HomePage> {
                   minutelyWeatherBean?.summary,
                   icon: SvgPicture.asset(
                     "${Constant.assetsSvg}ic_rain.svg",
-                    width: 16,
-                    height: 16,
+                    width: 16.w,
+                    height: 16.w,
                   ),
-                  padding: const EdgeInsets.all(4),
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  padding: EdgeInsets.all(4.w),
+                  style: TextStyle(color: Colors.white, fontSize: 12.sp),
                 ),
                 IconText(
                   "查看详情",
@@ -403,12 +408,12 @@ class _HomePageState extends State<HomePage> {
                     quarterTurns: 2,
                     child: SvgPicture.asset(
                       "${Constant.assetsSvg}ic_back_black.svg",
-                      width: 16,
-                      height: 16,
+                      width: 16.w,
+                      height: 16.w,
                       color: Colors.white,
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: TextStyle(color: Colors.white, fontSize: 12.sp),
                   afterIcon: false,
                   onTap: () {
                     setState(() {
@@ -421,20 +426,20 @@ class _HomePageState extends State<HomePage> {
             AnimatedCrossFade(
               firstChild: Container(),
               secondChild: Container(
-                margin: const EdgeInsets.only(top: 8),
+                margin: EdgeInsets.only(top: 8.h),
                 width: double.infinity,
-                height: 120,
+                height: 120.h,
                 child: GridView.builder(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   itemCount: minutelyWeatherBean?.minutely?.length ?? 0,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     // 列数
                     crossAxisCount: 2,
                     // 主轴方向上的空隙间距
-                    mainAxisSpacing: 8,
+                    mainAxisSpacing: 8.w,
                     // 次轴方向上的空隙间距
-                    crossAxisSpacing: 0,
+                    crossAxisSpacing: 0.h,
                     childAspectRatio: 0.88,
                   ),
                   itemBuilder: (context, index) {
@@ -444,12 +449,12 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Text(
                           divideTime(updateTime(minutelyWeatherBean?.minutely?[index].fxTime)),
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4.h),
                         Text(
                           "${minutelyWeatherBean?.minutely?[index].precip ?? ""}  ${minutelyWeatherBean?.minutely?[index].type == "snow" ? "雪" : "雨"}",
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
                         )
                       ],
                     );
@@ -460,7 +465,7 @@ class _HomePageState extends State<HomePage> {
               duration: const Duration(milliseconds: 400),
             ),
             // 分割线
-            const Divider(color: Colors.white),
+            Divider(color: Colors.white, thickness: 0.5.h),
           ],
         ),
       ),
@@ -471,8 +476,8 @@ class _HomePageState extends State<HomePage> {
   SliverToBoxAdapter buildHourlyWeather() {
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.only(left: 20, right: 20),
-        height: 100,
+        margin: EdgeInsets.only(left: 20.w, right: 20.w),
+        height: 100.h,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: hourlyWeatherBean?.hourly?.length ?? 0,
@@ -483,7 +488,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.transparent,
               child: InkWell(
                 // shape圆角半径
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.w),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -491,18 +496,18 @@ class _HomePageState extends State<HomePage> {
                     // 时间
                     Text(
                       divideTime(updateTime(hourlyWeatherBean?.hourly?[index].fxTime)),
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.white),
                     ),
                     // 气候图标
                     Image(
-                        width: 32,
-                        height: 32,
+                        width: 32.w,
+                        height: 32.w,
                         image: AssetImage(
                             "${Constant.assetsImages}${getWeatherIconName(int.tryParse(hourlyWeatherBean?.hourly?[index].icon ?? ""))}")),
                     // 温度
                     Text(
                       "${hourlyWeatherBean?.hourly?[index].temp}℃",
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.white),
                     ),
                   ],
                 ),
@@ -521,8 +526,8 @@ class _HomePageState extends State<HomePage> {
           },
           // 设置Item项间距
           separatorBuilder: (context, index) {
-            return const VerticalDivider(
-              width: 20,
+            return VerticalDivider(
+              width: 20.w,
               color: Colors.transparent,
             );
           },
@@ -538,13 +543,13 @@ class _HomePageState extends State<HomePage> {
           final fxDate = dailyWeatherBean?.daily?[index].fxDate ?? "";
           String friendlyTime = "$fxDate ${getDayOfWeek(fxDate)}";
           return Container(
-            margin: const EdgeInsets.only(left: 20, top: 12, right: 20),
+            margin: EdgeInsets.only(left: 20.w, top: 12.h, right: 20.w),
             child: Material(
               // 背景色
               color: Colors.transparent,
               child: InkWell(
                 // shape圆角半径
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -552,21 +557,21 @@ class _HomePageState extends State<HomePage> {
                     // 时间
                     Text(
                       friendlyTime,
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.white),
                     ),
                     // 气候图标
                     Image(
-                        width: 32,
-                        height: 32,
+                        width: 32.w,
+                        height: 32.w,
                         image: AssetImage(
                             "${Constant.assetsImages}${getWeatherIconName(int.tryParse(dailyWeatherBean?.daily?[index].iconDay ?? ""))}")),
                     // 温度
                     Container(
-                      width: 100,
+                      width: 100.w,
                       alignment: Alignment.centerRight,
                       child: Text(
                         "${dailyWeatherBean?.daily?[index].tempMax ?? "-"}℃/${dailyWeatherBean?.daily?[index].tempMin ?? "-"}℃",
-                        style: const TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
                       ),
                     ),
                   ],
@@ -585,23 +590,23 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         }, childCount: 7),
-        itemExtent: 48);
+        itemExtent: 48.h);
   }
 
   /// 空气质量
   SliverToBoxAdapter buildAirQuality() {
     return SliverToBoxAdapter(
-      child: Stack(
+      child: Column(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            margin: EdgeInsets.only(left: 20.w, top: 20.h, right: 20.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "空气质量",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: 18.sp),
                 ),
                 IconText(
                   "更多",
@@ -609,12 +614,12 @@ class _HomePageState extends State<HomePage> {
                     quarterTurns: 2,
                     child: SvgPicture.asset(
                       "${Constant.assetsSvg}ic_back_black.svg",
-                      width: 16,
-                      height: 16,
+                      width: 16.w,
+                      height: 16.w,
                       color: Colors.white,
                     ),
                   ),
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: 16.sp),
                   afterIcon: false,
                   onTap: () {
                     Navi.push(
@@ -627,143 +632,139 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Container(
-            margin: const EdgeInsets.only(left: 60, top: 48),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "污染指数",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-                const SizedBox(
-                  width: 1,
-                  child: Divider(
-                    color: Colors.transparent,
-                    thickness: 8,
+          SizedBox(height: 8.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "污染指数",
+                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
                   ),
-                ),
-                SleekCircularSlider(
-                  appearance: CircularSliderAppearance(
-                    customWidths: CustomSliderWidths(
-                      trackWidth: 8,
-                      progressBarWidth: 8,
-                      shadowWidth: 20,
+                  SizedBox(height: 8.h),
+                  SleekCircularSlider(
+                    appearance: CircularSliderAppearance(
+                      customWidths: CustomSliderWidths(
+                        trackWidth: 8.w,
+                        progressBarWidth: 8.w,
+                        shadowWidth: 20.w,
+                      ),
+                      customColors: CustomSliderColors(
+                        trackColor: Colors.grey,
+                        progressBarColors: [Colors.pink, Colors.yellow, Colors.blue],
+                        shadowColor: Colors.white,
+                        shadowMaxOpacity: 0.05,
+                        dotColor: Colors.transparent,
+                      ),
+                      infoProperties: InfoProperties(
+                        // 空气质量描述 取值范围：优，良，轻度污染，中度污染，重度污染，严重污染
+                        topLabelText: airQualityBean?.now?.category,
+                        topLabelStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        mainLabelStyle: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.w400),
+                        modifier: (value) {
+                          return "${value.toInt()}";
+                        },
+                      ),
+                      startAngle: 135,
+                      angleRange: 270,
+                      size: 0.25.sw,
+                      animationEnabled: true,
                     ),
-                    customColors: CustomSliderColors(
-                      trackColor: Colors.grey,
-                      progressBarColors: [Colors.pink, Colors.yellow, Colors.blue],
-                      shadowColor: Colors.white,
-                      shadowMaxOpacity: 0.05,
-                      dotColor: Colors.transparent,
+                    min: 0,
+                    max: 300,
+                    // 当前进度
+                    initialValue: double.parse(airQualityBean?.now?.aqi ?? "0"),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 138.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "PM10",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                        Text(
+                          "PM2.5",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                        Text(
+                          "NO₂",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                        Text(
+                          "SO₂",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                        Text(
+                          "O₃",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                        Text(
+                          "CO",
+                          style: TextStyle(color: const Color(0xff9FC8E9), fontSize: 12.sp),
+                        ),
+                      ],
                     ),
-                    infoProperties: InfoProperties(
-                      // 空气质量描述 取值范围：优，良，轻度污染，中度污染，重度污染，严重污染
-                      topLabelText: airQualityBean?.now?.category,
-                      topLabelStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      mainLabelStyle: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w400),
-                      modifier: (value) {
-                        return "${value.toInt()}";
-                      },
+                  ),
+                  SizedBox(width: 20.w),
+                  SizedBox(
+                    height: 138.h,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // PM10
+                        Text(
+                          airQualityBean?.now?.pm10 ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                        // PM2.5
+                        Text(
+                          airQualityBean?.now?.pm2p5 ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                        // 二氧化氮
+                        Text(
+                          airQualityBean?.now?.no2 ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                        // 二氧化硫
+                        Text(
+                          airQualityBean?.now?.so2 ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                        // 臭氧
+                        Text(
+                          airQualityBean?.now?.o3 ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                        // 一氧化碳
+                        Text(
+                          airQualityBean?.now?.co ?? "",
+                          style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                        ),
+                      ],
                     ),
-                    startAngle: 135,
-                    angleRange: 270,
-                    size: 120,
-                    animationEnabled: true,
                   ),
-                  min: 0,
-                  max: 300,
-                  // 当前进度
-                  initialValue: double.parse(airQualityBean?.now?.aqi ?? "0"),
-                )
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 200, top: 52),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  height: 138,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "PM10",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                      Text(
-                        "PM2.5",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                      Text(
-                        "NO₂",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                      Text(
-                        "SO₂",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                      Text(
-                        "O₃",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                      Text(
-                        "CO",
-                        style: TextStyle(color: Color(0xff9FC8E9), fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 138,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // PM10
-                      Text(
-                        airQualityBean?.now?.pm10 ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                      // PM2.5
-                      Text(
-                        airQualityBean?.now?.pm2p5 ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                      // 二氧化氮
-                      Text(
-                        airQualityBean?.now?.no2 ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                      // 二氧化硫
-                      Text(
-                        airQualityBean?.now?.so2 ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                      // 臭氧
-                      Text(
-                        airQualityBean?.now?.o3 ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                      // 一氧化碳
-                      Text(
-                        airQualityBean?.now?.co ?? "",
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -776,24 +777,24 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 20, top: 20),
-            child: const Text(
+            margin: EdgeInsets.only(left: 20.w, top: 20.h),
+            child: Text(
               "风向风力风速",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Colors.white, fontSize: 18.sp),
             ),
           ),
           // 动力风车
           Container(
-            margin: const EdgeInsets.only(left: 60, top: 48),
-            child: const Windmills(width: 120, height: 140),
+            margin: EdgeInsets.only(left: 0.25.sw, top: 48.h),
+            child: Windmills(width: 0.2.sw, height: 0.22.sw),
           ),
           Container(
-            margin: const EdgeInsets.only(left: 130, top: 118),
-            child: const Windmills(width: 60, height: 70),
+            margin: EdgeInsets.only(left: 0.35.sw, top: 118.h),
+            child: Windmills(width: 0.1.sw, height: 0.11.sw),
           ),
           Container(
-            margin: const EdgeInsets.only(left: 300, top: 48),
-            height: 138,
+            margin: EdgeInsets.only(left: 0.5.sw, top: 60.h),
+            height: 138.h,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -801,17 +802,17 @@ class _HomePageState extends State<HomePage> {
                 // 风向
                 Text(
                   "风向     ${liveWeatherBean?.now?.windDir}",
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(color: Colors.white, fontSize: 14.sp),
                 ),
                 // 风力
                 Text(
                   "风力     ${liveWeatherBean?.now?.windScale}级(${getWindScale(int.parse(liveWeatherBean?.now?.windScale ?? "0"))})",
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(color: Colors.white, fontSize: 14.sp),
                 ),
                 // 风速
                 Text(
                   "风速     ${liveWeatherBean?.now?.windSpeed}km/h",
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(color: Colors.white, fontSize: 14.sp),
                 ),
               ],
             ),
@@ -827,10 +828,10 @@ class _HomePageState extends State<HomePage> {
       delegate: SliverChildListDelegate(
         List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
           return Container(
-            margin: const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 8),
+            margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
             child: Text(
               "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text ?? lifeIndexBean?.daily?[index].category}",
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 14.sp),
             ),
           );
         }),

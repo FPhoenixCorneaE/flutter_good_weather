@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/util/log_util.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'pages/splash/splash_page.dart';
 import 'util/screen_util.dart';
 
-void main() {
+void main() async {
   LogUtil.init(isDebug: kDebugMode);
+  await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }
 

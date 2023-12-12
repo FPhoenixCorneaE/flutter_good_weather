@@ -2,15 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/constant/constant.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// 自定义标题栏
 class TitleBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
-  final double titleBarHeight;
+  final double? titleBarHeight;
   final String title;
   final Color? titleColor;
-  final double titleSize;
+  final double? titleSize;
   final String? leftImgName;
   final Color? leftImgColor;
   final GestureTapCallback? onLeftImgTap;
@@ -25,9 +26,9 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
     this.title, {
     Key? key,
     this.backgroundColor = Colors.transparent,
-    this.titleBarHeight = 36.0,
+    this.titleBarHeight,
     this.titleColor = Colors.white,
-    this.titleSize = 18.0,
+    this.titleSize,
     this.leftImgName,
     this.leftImgColor,
     this.onLeftImgTap,
@@ -58,19 +59,19 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             alignment: Alignment.center,
             child: Text(
               title,
-              style: TextStyle(fontSize: titleSize, color: titleColor),
+              style: TextStyle(fontSize: titleSize ?? 18.sp, color: titleColor,fontWeight: FontWeight.bold),
             ),
           ),
           Positioned(
-            left: 20,
-            width: 32,
-            height: 32,
+            left: 20.w,
+            width: 32.w,
+            height: 32.w,
             child: Material(
               // 背景色
               color: Colors.transparent,
               child: InkWell(
                 // shape圆角半径
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.w),
                 child: leftImgName != null
                     ? leftImgName!.endsWith(".svg")
                         ? SvgPicture.asset(
@@ -89,9 +90,9 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           Positioned(
-            right: 68,
-            width: 32,
-            height: 32,
+            right: 68.w,
+            width: 32.w,
+            height: 32.w,
             child: Material(
               // 背景色
               color: Colors.transparent,
@@ -116,15 +117,15 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           Positioned(
-            right: 20,
-            width: 32,
-            height: 32,
+            right: 20.w,
+            width: 32.w,
+            height: 32.w,
             child: Material(
               // 背景色
               color: Colors.transparent,
               child: InkWell(
                 // shape圆角半径
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.w),
                 child: rightImg2Name != null
                     ? rightImg2Name!.endsWith(".svg")
                         ? SvgPicture.asset(
@@ -149,5 +150,5 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize =>
-      Size(window.physicalSize.width, MediaQueryData.fromWindow(window).padding.top + titleBarHeight);
+      Size(window.physicalSize.width, MediaQueryData.fromWindow(window).padding.top + (titleBarHeight ?? 36.h));
 }
