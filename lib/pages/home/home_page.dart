@@ -71,8 +71,8 @@ class _HomePageState extends State<HomePage> {
           location();
         },
         onRightImg2Tap: () {
-          // 显示城市弹窗
-          showCityDialog(context);
+          // 显示设置弹窗
+          showSettingsDialog(context);
         },
       ),
       body: RefreshIndicator(
@@ -168,20 +168,20 @@ class _HomePageState extends State<HomePage> {
     switchCity(placemark[0].subLocality);
   }
 
-  /// 显示城市弹窗
-  void showCityDialog(BuildContext context) {
+  /// 显示设置弹窗
+  void showSettingsDialog(BuildContext context) {
     // 弹窗宽度
-    double dialogWidth = 120;
+    double dialogWidth = 120.w;
     // 弹窗每项高度
-    double cellHeight = 40;
-    double upArrowHeight = 8;
+    double cellHeight = 40.h;
+    double upArrowHeight = 8.h;
     List dataList = ["切换城市", "管理城市", "必应壁纸"];
     Navigator.push(
       context,
       Popup(
         child: ZoomInDialog(
-          right: 10,
-          top: navigationBarHeight - 10,
+          right: 10.w,
+          top: topSafeHeight + 60.h,
           offset: Offset(dialogWidth / 2, -(cellHeight * dataList.length + upArrowHeight) / 2),
           fun: (close) {
             cityDialogCloseFunction = close;
@@ -193,14 +193,14 @@ class _HomePageState extends State<HomePage> {
               children: [
                 // 三角形
                 Positioned(
-                  right: sqrt(pow(upArrowHeight, 2) * 2),
+                  right: sqrt(pow(upArrowHeight, 2.w) * 2),
                   child: Container(
                     width: upArrowHeight * 2,
                     height: upArrowHeight * 2,
                     transform: Matrix4.rotationZ(pi / 4),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(2.w),
                     ),
                   ),
                 ),
@@ -212,12 +212,12 @@ class _HomePageState extends State<HomePage> {
                     width: dialogWidth,
                     height: cellHeight * dataList.length,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(4.w),
                       color: Colors.white,
                     ),
                     child: ListView.separated(
                       itemCount: dataList.length,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 4.w),
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
                         return Material(
@@ -258,17 +258,22 @@ class _HomePageState extends State<HomePage> {
                               alignment: Alignment.center,
                               child: Text(
                                 dataList[index],
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                 ),
                               ),
                             ),
                           ),
                         );
                       },
-                      separatorBuilder: (context, index) =>
-                          const Divider(height: .1, indent: 50, endIndent: 0, color: Color(0xFFE6E6E6)),
+                      separatorBuilder: (context, index) {
+                        return Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20.w),
+                            width: double.infinity,
+                            height: .5.h,
+                            color: const Color(0xFFE6E6E6));
+                      },
                     ),
                   ),
                 ),
