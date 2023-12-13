@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
+import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/life_index_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
@@ -32,6 +33,7 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../constant/constant.dart';
 import '../../util/log_util.dart';
+import '../../widget/marquee.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -47,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   // 获取空气质量监测站数据会用到
   String? adm2;
   SearchCityBean? searchCityBean;
+  DisasterWarningBean? disasterWarningBean;
   LiveWeatherBean? liveWeatherBean;
   MinutelyWeatherBean? minutelyWeatherBean;
   HourlyWeatherBean? hourlyWeatherBean;
@@ -87,12 +90,14 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: navigationBarHeight),
+              margin: EdgeInsets.only(top: topSafeHeight + 72.h),
               child: CustomScrollView(
                 // 是否根据正在查看的内容确定滚动视图的范围
                 shrinkWrap: false,
                 // 内容
                 slivers: <Widget>[
+                  // 天气灾害预警
+                  buildDisasterWarning(),
                   SliverPadding(padding: EdgeInsets.only(top: 20.h)),
                   // 实时天气
                   buildWeatherCondition(),
@@ -121,10 +126,38 @@ class _HomePageState extends State<HomePage> {
                   SliverPadding(padding: EdgeInsets.only(top: 20.h)),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  /// 天气灾害预警，跑马灯效果
+  SliverToBoxAdapter buildDisasterWarning() {
+    return SliverToBoxAdapter(
+      child: disasterWarningBean?.warning?.isNotEmpty == true && disasterWarningBean?.warning?[0].text != null
+          ? Container(
+              height: 36.h,
+              alignment: Alignment.topCenter,
+              child: Marquee(
+                text: "${disasterWarningBean?.warning?[0].title ?? ""}  ${disasterWarningBean?.warning?[0].text ?? ""}",
+                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w400),
+                scrollAxis: Axis.horizontal,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                blankSpace: 0,
+                velocity: 50.0,
+                pauseAfterRound: const Duration(seconds: 1),
+                startPadding: 0,
+                accelerationDuration: const Duration(seconds: 1),
+                accelerationCurve: Curves.linear,
+                decelerationDuration: const Duration(milliseconds: 500),
+                decelerationCurve: Curves.easeOut,
+                fadingEdgeStartFraction: 0.2,
+                fadingEdgeEndFraction: 0.2,
+              ),
+            )
+          : Container(),
     );
   }
 
@@ -312,7 +345,7 @@ class _HomePageState extends State<HomePage> {
                     margin: EdgeInsets.only(top: 8.h, right: 8.w),
                     child: Text(
                       liveWeatherBean?.now?.temp ?? "",
-                      style: TextStyle(fontSize: 60.sp, color: Colors.white, fontWeight: FontWeight.w400),
+                      style: TextStyle(fontSize: 60.sp, color: Colors.white, fontWeight: FontWeight.w500),
                     )),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -887,6 +920,8 @@ class _HomePageState extends State<HomePage> {
       var id = location?.id;
       adm2 = location?.adm2;
       if (id != null) {
+        // 天气灾害预警
+        disasterWarning(id);
         // 实时天气
         liveWeatherNow(id);
         // 未来2小时每5分钟降雨预报
@@ -900,6 +935,15 @@ class _HomePageState extends State<HomePage> {
         // 生活指数
         lifeIndex(id);
       }
+    });
+  }
+
+  /// 天气灾害预警
+  void disasterWarning(String id) {
+    Api.disasterWarning(id, callback: (data) {
+      setState(() {
+        disasterWarningBean = data;
+      });
     });
   }
 

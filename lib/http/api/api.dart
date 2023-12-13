@@ -1,4 +1,5 @@
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
+import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/minutely_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
@@ -30,18 +31,33 @@ class Api {
   /// 例如 location=北京 或 location=116.41,39.92
   Api.searchCity(String location, {HttpCallback<SearchCityBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(Api.baseUrlSearch).get(
-      "/v2/city/lookup?key=${Api.apiKey}&range=cn",
+      "/v2/city/lookup",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
+        "range": "cn",
       },
     ).then((value) => callback?.call(SearchCityBean.fromJson(value.data)));
+  }
+
+  /// 天气灾害预警
+  /// [location] 需要查询地区的LocationID或以英文逗号分隔的经度,纬度坐标（十进制，最多支持小数点后两位），LocationID可通过城市搜索服务获取。例如 location=101010100 或 location=116.41,39.92
+  Api.disasterWarning(String location, {HttpCallback<DisasterWarningBean?>? callback}) {
+    HttpClient.getInstance().resetBaseUrl(Api.baseUrlWeather).get(
+      "/v7/warning/now",
+      queryParameters: {
+        "key": Api.apiKey,
+        "location": location,
+      },
+    ).then((value) => callback?.call(DisasterWarningBean.fromJson(value.data)));
   }
 
   /// 实时天气
   Api.liveWeatherNow(String location, {HttpCallback<LiveWeatherBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/weather/now?key=${Api.apiKey}",
+      "/v7/weather/now",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(LiveWeatherBean.fromJson(value.data)));
@@ -51,8 +67,9 @@ class Api {
   /// [location] 需要查询地区的以英文逗号分隔的经度,纬度坐标（十进制，最多支持小数点后两位）。例如 location=116.41,39.92
   Api.minutelyWeather(String location, {HttpCallback<MinutelyWeatherBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/minutely/5m?key=${Api.apiKey}",
+      "/v7/minutely/5m",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(MinutelyWeatherBean.fromJson(value.data)));
@@ -61,8 +78,9 @@ class Api {
   /// 逐小时天气预报 未来24小时
   Api.hourlyWeather(String location, {HttpCallback<HourlyWeatherBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/weather/24h?key=${Api.apiKey}",
+      "/v7/weather/24h",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(HourlyWeatherBean.fromJson(value.data)));
@@ -71,8 +89,9 @@ class Api {
   /// 逐日天气预报 (免费订阅)最多可以获得7天的数据
   Api.dailyWeather(String location, {HttpCallback<DailyWeatherBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/weather/7d?key=${Api.apiKey}",
+      "/v7/weather/7d",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(DailyWeatherBean.fromJson(value.data)));
@@ -81,8 +100,9 @@ class Api {
   /// 实时空气质量
   Api.airQualityNow(String location, {HttpCallback<AirQualityBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/air/now?key=${Api.apiKey}",
+      "/v7/air/now",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(AirQualityBean.fromJson(value.data)));
@@ -97,8 +117,9 @@ class Api {
   Api.lifeIndex(String location,
       {String type = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16", HttpCallback<LifeIndexBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/indices/1d?key=${Api.apiKey}",
+      "/v7/indices/1d",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
         "type": type,
       },
@@ -108,8 +129,9 @@ class Api {
   /// 空气质量每日预报
   Api.airQualityForecast(String location, {HttpCallback<AirQualityForecastBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/air/5d?key=${Api.apiKey}",
+      "/v7/air/5d",
       queryParameters: {
+        "key": Api.apiKey,
         "location": location,
       },
     ).then((value) => callback?.call(AirQualityForecastBean.fromJson(value.data)));
