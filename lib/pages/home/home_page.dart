@@ -137,25 +137,32 @@ class _HomePageState extends State<HomePage> {
   SliverToBoxAdapter buildDisasterWarning() {
     return SliverToBoxAdapter(
       child: disasterWarningBean?.warning?.isNotEmpty == true && disasterWarningBean?.warning?[0].text != null
-          ? Container(
-              height: 36.h,
-              alignment: Alignment.topCenter,
-              child: Marquee(
-                text: "${disasterWarningBean?.warning?[0].title ?? ""}  ${disasterWarningBean?.warning?[0].text ?? ""}",
-                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w400),
-                scrollAxis: Axis.horizontal,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                blankSpace: 0,
-                velocity: 50.0,
-                pauseAfterRound: const Duration(seconds: 1),
-                startPadding: 0,
-                accelerationDuration: const Duration(seconds: 1),
-                accelerationCurve: Curves.linear,
-                decelerationDuration: const Duration(milliseconds: 500),
-                decelerationCurve: Curves.easeOut,
-                fadingEdgeStartFraction: 0.2,
-                fadingEdgeEndFraction: 0.2,
+          ? InkWell(
+              child: Container(
+                height: 36.h,
+                alignment: Alignment.topCenter,
+                child: Marquee(
+                  text:
+                      "${disasterWarningBean?.warning?[0].title ?? ""}  ${disasterWarningBean?.warning?[0].text ?? ""}",
+                  style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w400),
+                  scrollAxis: Axis.horizontal,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  blankSpace: 0,
+                  velocity: 50.0,
+                  pauseAfterRound: const Duration(seconds: 1),
+                  startPadding: 0,
+                  accelerationDuration: const Duration(seconds: 1),
+                  accelerationCurve: Curves.linear,
+                  decelerationDuration: const Duration(milliseconds: 500),
+                  decelerationCurve: Curves.easeOut,
+                  fadingEdgeStartFraction: 0.2,
+                  fadingEdgeEndFraction: 0.2,
+                ),
               ),
+              onTap: () {
+                // 跳转灾害预警详情
+                Navi.push(context, Navi.disasterWarningDetailPage, params: disasterWarningBean);
+              },
             )
           : Container(),
     );

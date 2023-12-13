@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/pages/airquality/more_air_quality_page.dart';
 import 'package:flutter_good_weather/pages/city/manage_city_page.dart';
+import 'package:flutter_good_weather/pages/disasterwarning/disaster_warning_detail_page.dart';
 import 'package:flutter_good_weather/pages/home/home_page.dart';
 
 /// https://www.jianshu.com/p/b9d6ec92926f
@@ -8,6 +10,7 @@ class Navi {
   static const homePage = "app://HomePage";
   static const manageCityPage = "app://ManageCityPage";
   static const moreAirQualityPage = "app://MoreAirQualityPage";
+  static const disasterWarningDetailPage = "app://DisasterWarningDetailPage";
 
   Navi();
 
@@ -23,6 +26,8 @@ class Navi {
           (paramsMap["adm2"] as String?) ?? "",
           (paramsMap["location"] as String?) ?? "",
         );
+      case disasterWarningDetailPage:
+        return DisasterWarningDetailPage(params as DisasterWarningBean?);
     }
     return Container();
   }
