@@ -1,16 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_good_weather/util/log_util.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'pages/splash/splash_page.dart';
 import 'util/screen_util.dart';
 
 void main() async {
+  FlutterNativeSplash.preserve(widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
   LogUtil.init(isDebug: kDebugMode);
   await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
+  Timer(const Duration(seconds: 2), () {
+    FlutterNativeSplash.remove();
+  });
 }
 
 class MyApp extends StatelessWidget {
