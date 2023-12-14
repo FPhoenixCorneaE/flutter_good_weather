@@ -216,6 +216,7 @@ class HttpClient {
 void showLoading() {
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 2000)
+    // More indicatorType can see in 👉 flutter_spinkit showcase: https://github.com/jogboms/flutter_spinkit#-showcase
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.custom
     ..indicatorSize = 60.w

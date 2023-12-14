@@ -29,7 +29,7 @@
 
     <application
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="好天气"
         android:usesCleartextTraffic="true">
         <activity
