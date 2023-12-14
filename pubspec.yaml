@@ -82,6 +82,9 @@ dependencies:
   # 坐标和地址互转：https://pub-web.flutter-io.cn/packages/geocoding
   geocoding: ^2.1.1
 
+  # 设置 Splash Screen：https://pub-web.flutter-io.cn/packages/flutter_native_splash
+  flutter_native_splash: ^2.3.7
+
 
 dev_dependencies:
   flutter_test:
@@ -149,4 +152,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
+flutter_native_splash:
+  color: "#42a5f5"
+  image: assets/images/pic_bg_splash.png
 
