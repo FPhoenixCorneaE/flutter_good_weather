@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_good_weather/util/log_util.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         resizeToAvoidBottomInset: false,
         body: SplashPage(),
       ),
+      builder: EasyLoading.init(),
     );
   }
 }

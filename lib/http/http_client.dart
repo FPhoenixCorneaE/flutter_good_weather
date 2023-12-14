@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'dio_client.dart';
 import 'dio_config.dart';
@@ -20,8 +23,7 @@ class HttpClient {
   HttpClient._internal({BaseOptions? options, DioConfig? dioConfig})
       : _dio = DioClient(options: options, dioConfig: dioConfig);
 
-  static HttpClient getInstance(
-      {String? baseUrl, BaseOptions? options, DioConfig? dioConfig}) {
+  static HttpClient getInstance({String? baseUrl, BaseOptions? options, DioConfig? dioConfig}) {
     _instance ??= HttpClient._internal(options: options, dioConfig: dioConfig);
     return _instance!;
   }
@@ -36,11 +38,15 @@ class HttpClient {
   /// get
   Future<HttpResponse> get(String uri,
       {Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onReceiveProgress,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.get(
         uri,
         queryParameters: queryParameters,
@@ -51,19 +57,25 @@ class HttpClient {
       return handleResponse(response, httpTransformer: httpTransformer);
     } on Exception catch (e) {
       return handleException(e);
+    } finally {
+      dismissLoading();
     }
   }
 
   /// post
   Future<HttpResponse> post(String uri,
-      {data,
+      {dynamic data,
       Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onSendProgress,
       ProgressCallback? onReceiveProgress,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.post(
         uri,
         data: data,
@@ -76,19 +88,25 @@ class HttpClient {
       return handleResponse(response, httpTransformer: httpTransformer);
     } on Exception catch (e) {
       return handleException(e);
+    } finally {
+      dismissLoading();
     }
   }
 
   /// patch
   Future<HttpResponse> patch(String uri,
-      {data,
+      {dynamic data,
       Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       Options? options,
       CancelToken? cancelToken,
       ProgressCallback? onSendProgress,
       ProgressCallback? onReceiveProgress,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.patch(
         uri,
         data: data,
@@ -101,17 +119,23 @@ class HttpClient {
       return handleResponse(response, httpTransformer: httpTransformer);
     } on Exception catch (e) {
       return handleException(e);
+    } finally {
+      dismissLoading();
     }
   }
 
   /// delete
   Future<HttpResponse> delete(String uri,
-      {data,
+      {dynamic data,
       Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       Options? options,
       CancelToken? cancelToken,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.delete(
         uri,
         data: data,
@@ -122,17 +146,23 @@ class HttpClient {
       return handleResponse(response, httpTransformer: httpTransformer);
     } on Exception catch (e) {
       return handleException(e);
+    } finally {
+      dismissLoading();
     }
   }
 
   /// put
   Future<HttpResponse> put(String uri,
-      {data,
+      {dynamic data,
       Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       Options? options,
       CancelToken? cancelToken,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.put(
         uri,
         data: data,
@@ -143,6 +173,8 @@ class HttpClient {
       return handleResponse(response, httpTransformer: httpTransformer);
     } on Exception catch (e) {
       return handleException(e);
+    } finally {
+      dismissLoading();
     }
   }
 
@@ -150,6 +182,7 @@ class HttpClient {
   Future<Response> download(String urlPath, savePath,
       {ProgressCallback? onReceiveProgress,
       Map<String, dynamic>? queryParameters,
+      bool isShowLoading = true,
       CancelToken? cancelToken,
       bool deleteOnError = true,
       String lengthHeader = Headers.contentLengthHeader,
@@ -157,6 +190,9 @@ class HttpClient {
       Options? options,
       HttpTransformer? httpTransformer}) async {
     try {
+      if (isShowLoading) {
+        showLoading();
+      }
       var response = await _dio.download(
         urlPath,
         savePath,
@@ -171,12 +207,35 @@ class HttpClient {
       return response;
     } catch (e) {
       rethrow;
+    } finally {
+      dismissLoading();
     }
   }
 }
 
-HttpResponse handleResponse(Response? response,
-    {HttpTransformer? httpTransformer}) {
+void showLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..indicatorSize = 60.w
+    ..radius = 20.w
+    ..progressColor = Colors.white
+    ..backgroundColor = Colors.black.withOpacity(0.5)
+    ..indicatorColor = Colors.blue
+    ..textColor = Colors.white
+    ..textStyle = TextStyle(color: Colors.white, fontSize: 20.sp)
+    ..maskColor = Colors.black.withOpacity(0.5)
+    ..userInteractions = true
+    ..dismissOnTap = false;
+  EasyLoading.show(status: "加载中...");
+}
+
+void dismissLoading() {
+  EasyLoading.dismiss();
+}
+
+HttpResponse handleResponse(Response? response, {HttpTransformer? httpTransformer}) {
   httpTransformer ??= DefaultHttpTransformer.getInstance();
 
   // 返回值异常
@@ -186,16 +245,14 @@ HttpResponse handleResponse(Response? response,
 
   // token失效
   if (_isTokenTimeout(response.statusCode)) {
-    return HttpResponse.failureFromError(
-        UnauthorisedException(message: "没有权限", code: response.statusCode));
+    return HttpResponse.failureFromError(UnauthorisedException(message: "没有权限", code: response.statusCode));
   }
   // 接口调用成功
   if (_isRequestSuccess(response.statusCode)) {
     return httpTransformer.parse(response);
   } else {
     // 接口调用失败
-    return HttpResponse.failure(
-        errorMsg: response.statusMessage, errorCode: response.statusCode);
+    return HttpResponse.failure(errorMsg: response.statusMessage, errorCode: response.statusCode);
   }
 }
 
@@ -244,8 +301,7 @@ HttpException _parseException(Exception error) {
             case 503:
               return BadServiceException(message: "服务器挂了", code: errCode);
             case 505:
-              return UnauthorisedException(
-                  message: "不支持HTTP协议请求", code: errCode);
+              return UnauthorisedException(message: "不支持HTTP协议请求", code: errCode);
             default:
               return UnknownException(error.error.message);
           }
