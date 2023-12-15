@@ -336,6 +336,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.2"
+  grouped_grid:
+    dependency: "direct main"
+    description:
+      name: grouped_grid
+      sha256: b2f28bbecfa6caf888bcf87e87db3b2979593f353cd2e06b4a60ee0c0aa9d410
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.2"
+  grouped_list:
+    dependency: "direct main"
+    description:
+      name: grouped_list
+      sha256: fef106470186081c32636aa055492eee7fc7fe8bf0921a48d31ded24821af19f
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.1.2"
   html:
     dependency: transitive
     description:
@@ -613,6 +629,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
+  sliver_tools:
+    dependency: transitive
+    description:
+      name: sliver_tools
+      sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.12"
   source_span:
     dependency: transitive
     description:

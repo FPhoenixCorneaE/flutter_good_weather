@@ -7,7 +7,7 @@ import 'package:flutter_good_weather/bean/air_quality_bean.dart';
 import 'package:flutter_good_weather/bean/daily_weather_bean.dart';
 import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
-import 'package:flutter_good_weather/bean/life_index_bean.dart';
+import 'package:flutter_good_weather/bean/living_index_bean.dart';
 import 'package:flutter_good_weather/bean/live_weather_bean.dart';
 import 'package:flutter_good_weather/bean/minutely_weather_bean.dart';
 import 'package:flutter_good_weather/bean/search_city_bean.dart';
@@ -45,6 +45,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? cityName = "东城区";
+  String? locationId;
 
   // 获取空气质量监测站数据会用到
   String? adm2;
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   HourlyWeatherBean? hourlyWeatherBean;
   DailyWeatherBean? dailyWeatherBean;
   AirQualityBean? airQualityBean;
-  LifeIndexBean? lifeIndexBean;
+  LivingIndexBean? livingIndexBean;
   Function? cityDialogCloseFunction;
   Result? cityResult;
   bool isExpandedPrecip = false;
@@ -98,9 +99,8 @@ class _HomePageState extends State<HomePage> {
                 slivers: <Widget>[
                   // 天气灾害预警
                   buildDisasterWarning(),
-                  SliverPadding(padding: EdgeInsets.only(top: 20.h)),
                   // 实时天气
-                  buildWeatherCondition(),
+                  ...buildWeatherCondition(),
                   // 未来2小时每5分钟降雨预报
                   buildMinutelyWeather(),
                   // 逐小时天气预报列表
@@ -112,18 +112,7 @@ class _HomePageState extends State<HomePage> {
                   // 风向风力风速
                   buildWindBox(),
                   // 生活指数
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: Text(
-                        "生活指数",
-                        style: TextStyle(color: Colors.white, fontSize: 18.sp),
-                      ),
-                    ),
-                  ),
-                  SliverPadding(padding: EdgeInsets.only(top: 8.h)),
-                  buildLifeIndex(),
-                  SliverPadding(padding: EdgeInsets.only(top: 20.h)),
+                  ...buildLivingIndex(),
                 ],
               ),
             ),
@@ -326,104 +315,107 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 实时天气
-  SliverToBoxAdapter buildWeatherCondition() {
-    return SliverToBoxAdapter(
-      child: Stack(
-        children: [
-          // 星期几
-          Positioned(
-              left: 20.w,
-              top: 8.h,
-              child: Text(
-                getTodayOfWeek(),
-                style: TextStyle(fontSize: 18.sp, color: Colors.white),
-              )),
-          // 温度
-          Align(
-            alignment: FractionalOffset.topCenter,
-            child: Row(
-              // 主轴(就是水平方向)对齐方式
-              mainAxisAlignment: MainAxisAlignment.center,
-              // 交叉轴(就是垂直方向)对齐方式
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                    margin: EdgeInsets.only(top: 8.h, right: 8.w),
-                    child: Text(
-                      liveWeatherBean?.now?.temp ?? "",
-                      style: TextStyle(fontSize: 60.sp, color: Colors.white, fontWeight: FontWeight.w500),
-                    )),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 摄氏度符号
-                    Text(
-                      "℃",
-                      style: TextStyle(fontSize: 20.sp, color: Colors.white),
-                    ),
-                    // 天气状况
-                    Text(
-                      liveWeatherBean?.now?.text ?? "",
-                      style: TextStyle(fontSize: 20.sp, color: Colors.white),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          // 当天最高温和最低温
-          Align(
-              alignment: FractionalOffset.topCenter,
-              child: Container(
-                margin: EdgeInsets.only(top: 100.h),
+  List<Widget> buildWeatherCondition() {
+    return [
+      SliverPadding(padding: EdgeInsets.only(top: 20.h)),
+      SliverToBoxAdapter(
+        child: Stack(
+          children: [
+            // 星期几
+            Positioned(
+                left: 20.w,
+                top: 8.h,
                 child: Text(
-                  "${dailyWeatherBean?.daily?.first.tempMax ?? "-"}℃/${dailyWeatherBean?.daily?.first.tempMin ?? "-"}℃",
-                  style: TextStyle(fontSize: 16.sp, color: Colors.white),
-                ),
-              )),
-          Container(
-            margin: EdgeInsets.only(left: 20.w, top: 148.h, right: 20.w),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                            width: 20.w,
-                            height: 20.w,
-                            image: const AssetImage("${Constant.assetsImages}ic_weather_sun.png")),
-                        SizedBox(width: 4.w),
-                        Text(
-                          "好天气",
-                          style: TextStyle(color: Colors.white, fontSize: 14.sp),
-                        )
-                      ],
-                    ),
-                    Text(
-                      "最近更新时间：${divideTime(updateTime(liveWeatherBean?.updateTime))}",
-                      style: TextStyle(color: Colors.white, fontSize: 12.sp),
-                    )
-                  ],
-                )
-              ],
+                  getTodayOfWeek(),
+                  style: TextStyle(fontSize: 18.sp, color: Colors.white),
+                )),
+            // 温度
+            Align(
+              alignment: FractionalOffset.topCenter,
+              child: Row(
+                // 主轴(就是水平方向)对齐方式
+                mainAxisAlignment: MainAxisAlignment.center,
+                // 交叉轴(就是垂直方向)对齐方式
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                      margin: EdgeInsets.only(top: 8.h, right: 8.w),
+                      child: Text(
+                        liveWeatherBean?.now?.temp ?? "",
+                        style: TextStyle(fontSize: 60.sp, color: Colors.white, fontWeight: FontWeight.w500),
+                      )),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 摄氏度符号
+                      Text(
+                        "℃",
+                        style: TextStyle(fontSize: 20.sp, color: Colors.white),
+                      ),
+                      // 天气状况
+                      Text(
+                        liveWeatherBean?.now?.text ?? "",
+                        style: TextStyle(fontSize: 20.sp, color: Colors.white),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-          // 分割线
-          Container(
-            margin: EdgeInsets.only(left: 20.w, top: 180.h, right: 20.w),
-            child: Divider(color: Colors.white, thickness: 0.5.h),
-          ),
-        ],
+            // 当天最高温和最低温
+            Align(
+                alignment: FractionalOffset.topCenter,
+                child: Container(
+                  margin: EdgeInsets.only(top: 100.h),
+                  child: Text(
+                    "${dailyWeatherBean?.daily?.first.tempMax ?? "-"}℃/${dailyWeatherBean?.daily?.first.tempMin ?? "-"}℃",
+                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                  ),
+                )),
+            Container(
+              margin: EdgeInsets.only(left: 20.w, top: 148.h, right: 20.w),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image(
+                              width: 20.w,
+                              height: 20.w,
+                              image: const AssetImage("${Constant.assetsImages}ic_weather_sun.png")),
+                          SizedBox(width: 4.w),
+                          Text(
+                            "好天气",
+                            style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                          )
+                        ],
+                      ),
+                      Text(
+                        "最近更新时间：${divideTime(updateTime(liveWeatherBean?.updateTime))}",
+                        style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            // 分割线
+            Container(
+              margin: EdgeInsets.only(left: 20.w, top: 180.h, right: 20.w),
+              child: Divider(color: Colors.white, thickness: 0.5.h),
+            ),
+          ],
+        ),
       ),
-    );
+    ];
   }
 
   /// 未来2小时每5分钟降雨预报
@@ -868,20 +860,60 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 生活指数
-  SliverList buildLifeIndex() {
-    return SliverList(
-      delegate: SliverChildListDelegate(
-        List.generate(lifeIndexBean?.daily?.length ?? 0, (index) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-            child: Text(
-              "${lifeIndexBean?.daily?[index].name}：${lifeIndexBean?.daily?[index].text ?? lifeIndexBean?.daily?[index].category}",
-              style: TextStyle(color: Colors.white, fontSize: 14.sp),
-            ),
-          );
-        }),
+  List<Widget> buildLivingIndex() {
+    return [
+      SliverToBoxAdapter(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "生活指数",
+                style: TextStyle(color: Colors.white, fontSize: 18.sp),
+              ),
+              IconText(
+                "更多",
+                icon: RotatedBox(
+                  quarterTurns: 2,
+                  child: SvgPicture.asset(
+                    "${Constant.assetsSvg}ic_back_black.svg",
+                    width: 16.w,
+                    height: 16.w,
+                    color: Colors.white,
+                  ),
+                ),
+                style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                afterIcon: false,
+                onTap: () {
+                  Navi.push(
+                    context,
+                    Navi.moreLivingIndexPage,
+                    params: {"location": cityName, "locationId": locationId},
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
-    );
+      SliverPadding(padding: EdgeInsets.only(top: 8.h)),
+      SliverList(
+        delegate: SliverChildListDelegate(
+          List.generate(livingIndexBean?.daily?.length ?? 0, (index) {
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              child: Text(
+                "${livingIndexBean?.daily?[index].name}：${livingIndexBean?.daily?[index].text ?? livingIndexBean?.daily?[index].category}",
+                style: TextStyle(color: Colors.white, fontSize: 14.sp),
+              ),
+            );
+          }),
+        ),
+      ),
+      SliverPadding(padding: EdgeInsets.only(top: 20.h)),
+    ];
   }
 
   Future<void> _onRefresh() async {
@@ -924,23 +956,23 @@ class _HomePageState extends State<HomePage> {
       });
       var location = searchCityBean?.location?.first;
       // 城市id
-      var id = location?.id;
+      locationId = location?.id;
       adm2 = location?.adm2;
-      if (id != null) {
+      if (locationId != null) {
         // 天气灾害预警
-        disasterWarning(id);
+        disasterWarning(locationId!);
         // 实时天气
-        liveWeatherNow(id);
+        liveWeatherNow(locationId!);
         // 未来2小时每5分钟降雨预报
         minutelyWeather("${location!.lon},${location.lat}");
         // 逐小时天气预报
-        hourlyWeather(id);
+        hourlyWeather(locationId!);
         // 逐日天气预报
-        dailyWeather(id);
+        dailyWeather(locationId!);
         // 当天空气质量
-        airQuality(id);
+        airQuality(locationId!);
         // 生活指数
-        lifeIndex(id);
+        livingIndex(locationId!);
       }
     });
   }
@@ -1000,10 +1032,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 生活指数
-  void lifeIndex(String id) {
-    Api.lifeIndex(id, callback: (data) {
+  void livingIndex(String id) {
+    Api.livingIndex(id, callback: (data) {
       setState(() {
-        lifeIndexBean = data;
+        livingIndexBean = data;
       });
     });
   }

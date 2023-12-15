@@ -4,6 +4,7 @@ import 'package:flutter_good_weather/pages/airquality/more_air_quality_page.dart
 import 'package:flutter_good_weather/pages/city/manage_city_page.dart';
 import 'package:flutter_good_weather/pages/disasterwarning/disaster_warning_detail_page.dart';
 import 'package:flutter_good_weather/pages/home/home_page.dart';
+import 'package:flutter_good_weather/pages/livingindex/more_living_index_page.dart';
 
 /// https://www.jianshu.com/p/b9d6ec92926f
 class Navi {
@@ -11,6 +12,7 @@ class Navi {
   static const manageCityPage = "app://ManageCityPage";
   static const moreAirQualityPage = "app://MoreAirQualityPage";
   static const disasterWarningDetailPage = "app://DisasterWarningDetailPage";
+  static const moreLivingIndexPage = "app://MoreLivingIndexPage";
 
   Navi();
 
@@ -21,13 +23,19 @@ class Navi {
       case manageCityPage:
         return const ManageCityPage();
       case moreAirQualityPage:
-        Map<String, dynamic> paramsMap = params as Map<String, dynamic>;
+        Map<String, String?> paramsMap = params as Map<String, String?>;
         return MoreAirQualityPage(
-          (paramsMap["adm2"] as String?) ?? "",
-          (paramsMap["location"] as String?) ?? "",
+          paramsMap["adm2"] ?? "",
+          paramsMap["location"] ?? "",
         );
       case disasterWarningDetailPage:
         return DisasterWarningDetailPage(params as DisasterWarningBean?);
+      case moreLivingIndexPage:
+        Map<String, String?> paramsMap = params as Map<String, String?>;
+        return MoreLivingIndexPage(
+          paramsMap["location"],
+          paramsMap["locationId"],
+        );
     }
     return Container();
   }

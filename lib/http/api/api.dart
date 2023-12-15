@@ -6,7 +6,7 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 
 import '../../bean/air_quality_forecast_bean.dart';
 import '../../bean/daily_weather_bean.dart';
-import '../../bean/life_index_bean.dart';
+import '../../bean/living_index_bean.dart';
 import '../../bean/live_weather_bean.dart';
 import '../http_client.dart';
 
@@ -114,16 +114,18 @@ class Api {
   /// 钓鱼指数 4, 紫外线指数 5, 旅游指数 6, 花粉过敏指数 7, 舒适度指数 8,
   /// 感冒指数 9, 空气污染扩散条件指数	10, 空调开启指数 11, 太阳镜指数 12,
   /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
-  Api.lifeIndex(String location,
-      {String type = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16", HttpCallback<LifeIndexBean?>? callback}) {
+  Api.livingIndex(String location,
+      {String days = "1d",
+      String type = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
+      HttpCallback<LivingIndexBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
-      "/v7/indices/1d",
+      "/v7/indices/$days",
       queryParameters: {
         "key": Api.apiKey,
         "location": location,
         "type": type,
       },
-    ).then((value) => callback?.call(LifeIndexBean.fromJson(value.data)));
+    ).then((value) => callback?.call(LivingIndexBean.fromJson(value.data)));
   }
 
   /// 空气质量每日预报

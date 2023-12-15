@@ -85,6 +85,12 @@ dependencies:
   # 设置 Splash Screen：https://pub-web.flutter-io.cn/packages/flutter_native_splash
   flutter_native_splash: ^2.3.7
 
+  # 分组列表组件：https://pub-web.flutter-io.cn/packages/grouped_list
+  grouped_list: ^5.1.2
+
+  # 分组列表组件：https://pub-web.flutter-io.cn/packages/grouped_grid
+  grouped_grid: ^0.1.2
+
 
 dev_dependencies:
   flutter_test:

@@ -4,8 +4,8 @@
 /// daily : [{"date":"2023-01-28","type":"1","name":"运动指数","level":"2","category":"较适宜","text":"天气较好，无雨水困扰，较适宜进行各种运动，但因气温较低，在户外运动请注意增减衣物。"},{"date":"2023-01-28","type":"2","name":"洗车指数","level":"2","category":"较适宜","text":"较适宜洗车，未来一天无雨，风力较小，擦洗一新的汽车至少能保持一天。"},{"date":"2023-01-28","type":"3","name":"穿衣指数","level":"2","category":"冷","text":"天气冷，建议着棉服、羽绒服、皮夹克加羊毛衫等冬季服装。年老体弱者宜着厚棉衣、冬大衣或厚羽绒服。"},{"date":"2023-01-28","type":"4","name":"钓鱼指数","level":"2","category":"较适宜","text":"较适合垂钓，但天气稍凉，会对垂钓产生一定的影响。"},{"date":"2023-01-28","type":"5","name":"紫外线指数","level":"2","category":"弱","text":"紫外�\n2023-01-28 17:42:36.414 6296-6352/com.fphoenixcorneae.flutter_good_weather I/flutter: 凉，不过也是个好天气哦。适宜旅游，可不要错过机会呦！"},{"date":"2023-01-28","type":"7","name":"过敏指数","level":"1","category":"极不易发","text":"天气条件极不易诱发过敏，可放心外出，享受生活。"},{"date":"2023-01-28","type":"8","name":"舒适度指数","level":"2","category":"较舒适","text":"白天虽然天气晴好，但早晚会感觉偏凉，午后舒适、宜人。"},{"date":"2023-01-28","type":"9","name":"感冒指数","level":"2","category":"较易发","text":"昼夜温差较大，较易发生感冒，请适当增减衣服。体质较弱的朋友请注意防护。"}]
 /// refer : {"sources":["QWeather"],"license":["CC BY-SA 4.0"]}
 
-class LifeIndexBean {
-  LifeIndexBean({
+class LivingIndexBean {
+  LivingIndexBean({
       String? code, 
       String? updateTime, 
       String? fxLink, 
@@ -18,7 +18,7 @@ class LifeIndexBean {
     _refer = refer;
 }
 
-  LifeIndexBean.fromJson(dynamic json) {
+  LivingIndexBean.fromJson(dynamic json) {
     _code = json['code'];
     _updateTime = json['updateTime'];
     _fxLink = json['fxLink'];
@@ -35,12 +35,12 @@ class LifeIndexBean {
   String? _fxLink;
   List<Daily>? _daily;
   Refer? _refer;
-LifeIndexBean copyWith({  String? code,
+LivingIndexBean copyWith({  String? code,
   String? updateTime,
   String? fxLink,
   List<Daily>? daily,
   Refer? refer,
-}) => LifeIndexBean(  code: code ?? _code,
+}) => LivingIndexBean(  code: code ?? _code,
   updateTime: updateTime ?? _updateTime,
   fxLink: fxLink ?? _fxLink,
   daily: daily ?? _daily,
