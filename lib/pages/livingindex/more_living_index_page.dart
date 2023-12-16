@@ -67,7 +67,9 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                 mainAxisSpacing: 4.h,
                 childAspectRatio: 2,
               ),
-              groupKeys: livingIndexBean?.daily?.map((e) => e.date ?? "").toSet() ?? <dynamic>{},
+              groupKeys:
+                  livingIndexBean?.daily?.map((e) => e.date ?? "").toSet() ??
+                      <dynamic>{},
               groupStickyHeaders: false,
               groupHeaderBuilder: (context, group) {
                 return Padding(
@@ -75,59 +77,115 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                   child: Text(
                     group,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.bold),
                   ),
                 );
               },
               itemBuilder: (context, group) {
-                Daily? element =
-                    livingIndexBean?.daily?.where((element) => element.date == group.key).toList()[group.itemIndex];
-                var max;
-                if (element?.type == "1") {
-                  max = 3;
-                } else if (element?.type == "2") {
-                  max = 4;
-                }else{
-                  max=8;
-                }
+                Daily? element = livingIndexBean?.daily
+                    ?.where((element) => element.date == group.key)
+                    .toList()[group.itemIndex];
                 return Card(
                   color: const Color(0x66000000),
                   elevation: 8.h,
                   child: Padding(
                     padding: EdgeInsets.all(8.w),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        Center(child: Text(
                           element?.name ?? "",
-                          style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
-                        ),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold),
+                        ),),
                         Row(
                           children: [
-                            Text("等级：", style: TextStyle(color: Colors.white, fontSize: 16.sp)),
-                            Expanded(child: IntervalProgressBar(
-                                direction: IntervalProgressDirection.horizontal,
-                                max: max,
-                                progress: int.parse(element?.level??"1"),
-                                intervalSize: 2,
-                                size: Size(double.infinity, 8.h),
-                                highlightColor: Colors.red,
-                                defaultColor: Colors.grey,
-                                intervalColor: Colors.transparent,
-                                intervalHighlightColor: Colors.transparent,
-                                reverse: false,
-                                radius: 0)),
+                            Text("等级：",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16.sp)),
+                            Expanded(
+                              child: IntervalProgressBar(
+                                  direction:
+                                      IntervalProgressDirection.horizontal,
+                                  max: getLivingIndexMaxLevelByType(
+                                      element?.type),
+                                  progress: int.parse(element?.level ?? "1"),
+                                  intervalSize: 2,
+                                  size: Size(double.infinity, 8.h),
+                                  highlightColor: Colors.blue,
+                                  defaultColor: Colors.grey,
+                                  intervalColor: Colors.transparent,
+                                  intervalHighlightColor: Colors.transparent,
+                                  reverse: false,
+                                  radius: 0),
+                            ),
                           ],
                         ),
-                        Expanded(child: Text("建议：${element?.text ?? ""}", style: TextStyle(color: Colors.white, fontSize: 16.sp))),
+                        Text("级别：${element?.category ?? ""}",
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 16.sp)),
+                        Expanded(
+                          child: Text(
+                            "建议：${element?.text ?? ""}",
+                            textAlign: TextAlign.start,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 );
               },
-              itemCountForGroup: (key) => livingIndexBean?.daily?.where((element) => element.date == key).length ?? 0),
+              itemCountForGroup: (key) =>
+                  livingIndexBean?.daily
+                      ?.where((element) => element.date == key)
+                      .length ??
+                  0),
         )
       ]),
     );
+  }
+
+  /// 根据生活指数类型获取生活指数预报最大等级等级
+  getLivingIndexMaxLevelByType(String? type) {
+    int max = 3;
+    switch (type) {
+      case "1":
+      case "4":
+        max = 3;
+        break;
+      case "2":
+      case "9":
+      case "11":
+        max = 4;
+        break;
+      case "3":
+      case "8":
+        max = 7;
+        break;
+      case "5":
+      case "6":
+      case "7":
+      case "10":
+      case "12":
+      case "15":
+      case "16":
+        max = 5;
+        break;
+      case "13":
+        max = 8;
+        break;
+      case "14":
+        max = 6;
+        break;
+    }
+    return max;
   }
 
   GroupedListView<Daily, String> buildGroupedListView() {
@@ -142,7 +200,10 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
         child: Text(
           value,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 28.sp,
+              fontWeight: FontWeight.bold),
         ),
       ),
       itemBuilder: (c, element) {
@@ -156,9 +217,13 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
               children: [
                 Text(
                   element.name ?? "",
-                  style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold),
                 ),
-                Text("建议：${element.text ?? ""}", style: TextStyle(color: Colors.white, fontSize: 16.sp)),
+                Text("建议：${element.text ?? ""}",
+                    style: TextStyle(color: Colors.white, fontSize: 16.sp)),
               ],
             ),
           ),

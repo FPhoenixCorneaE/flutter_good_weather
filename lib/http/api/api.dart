@@ -116,7 +116,7 @@ class Api {
   /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
   Api.livingIndex(String location,
       {String days = "1d",
-      String type = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16",
+      String type = "0",
       HttpCallback<LivingIndexBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
       "/v7/indices/$days",

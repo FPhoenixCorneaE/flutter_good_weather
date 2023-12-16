@@ -53,6 +53,9 @@ void checkPermission(
       case PermissionStatus.permanentlyDenied:
         goSetting != null ? goSetting() : await openAppSettings();
         break;
+      case PermissionStatus.provisional:
+        // TODO: Handle this case.
+        break;
     }
   } else {
     onSuccess != null ? onSuccess() : showCenterToast("权限申请成功");
