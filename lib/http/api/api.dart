@@ -6,8 +6,9 @@ import 'package:flutter_good_weather/bean/search_city_bean.dart';
 
 import '../../bean/air_quality_forecast_bean.dart';
 import '../../bean/daily_weather_bean.dart';
-import '../../bean/living_index_bean.dart';
+import '../../bean/hot_wallpaper_bean.dart';
 import '../../bean/live_weather_bean.dart';
+import '../../bean/living_index_bean.dart';
 import '../http_client.dart';
 
 typedef HttpCallback<T> = void Function(T result);
@@ -22,6 +23,9 @@ class Api {
 
   // 必应壁纸
   static const baseUrlBing = "https://cn.bing.com";
+
+  // 手机壁纸
+  static const baseUrlPicasso = "http://service.picasso.adesk.com";
 
   // 和风天气的KEY，请使用自己的
   static String apiKey = "8d3d5b55abb84ea5a26cbc457edd625e";
@@ -114,10 +118,7 @@ class Api {
   /// 钓鱼指数 4, 紫外线指数 5, 旅游指数 6, 花粉过敏指数 7, 舒适度指数 8,
   /// 感冒指数 9, 空气污染扩散条件指数	10, 空调开启指数 11, 太阳镜指数 12,
   /// 化妆指数 13, 晾晒指数 14, 交通指数 15 ，防晒指数	16
-  Api.livingIndex(String location,
-      {String days = "1d",
-      String type = "0",
-      HttpCallback<LivingIndexBean?>? callback}) {
+  Api.livingIndex(String location, {String days = "1d", String type = "0", HttpCallback<LivingIndexBean?>? callback}) {
     HttpClient.getInstance().resetBaseUrl(baseUrlWeather).get(
       "/v7/indices/$days",
       queryParameters: {
@@ -137,5 +138,30 @@ class Api {
         "location": location,
       },
     ).then((value) => callback?.call(AirQualityForecastBean.fromJson(value.data)));
+  }
+
+  /// 热门壁纸
+  /// [limit] 返回数量，默认20条，最多30条
+  /// [order] 值 hot为favs， new
+  /// [skip] 略过数量
+  /// [adult] 布尔值，暂时未知
+  /// [first] 数字，如1
+  Api.hotWallpaper(
+      {int limit = 30,
+      int? first,
+      int? skip,
+      String? order = "hot",
+      bool? adult,
+      HttpCallback<HotWallpaperBean?>? callback}) {
+    HttpClient.getInstance().resetBaseUrl(baseUrlPicasso).get(
+      "/v1/vertical/vertical",
+      queryParameters: {
+        "limit": limit,
+        "first": first ?? 0,
+        "skip": skip ?? 0,
+        "order": order ?? "hot",
+        "adult": adult ?? false,
+      },
+    ).then((value) => callback?.call(HotWallpaperBean.fromJson(value.data)));
   }
 }

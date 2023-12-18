@@ -44,9 +44,6 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
         titleColor: Colors.white,
         leftImgName: "ic_back_black.svg",
         leftImgColor: Colors.white,
-        onLeftImgTap: () {
-          Navigator.of(context).pop();
-        },
       ),
       body: Stack(children: <Widget>[
         const Positioned.fill(

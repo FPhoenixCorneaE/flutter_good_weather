@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../constant/constant.dart';
+import '../../navi.dart';
 import '../../widget/title_bar.dart';
 
 /// 设置壁纸
@@ -21,15 +22,12 @@ class _SetWallpaperPageState extends State<SetWallpaperPage> {
     return Scaffold(
       // 设置AppBar状态栏透明
       extendBodyBehindAppBar: true,
-      appBar: TitleBar(
+      appBar: const TitleBar(
         "设置壁纸",
         backgroundColor: Colors.transparent,
         titleColor: Colors.black,
         leftImgName: "ic_back_black.svg",
         leftImgColor: Colors.black,
-        onLeftImgTap: () {
-          Navigator.of(context).pop();
-        },
       ),
       body: ListView.separated(
         itemBuilder: (context, index) {
@@ -57,7 +55,13 @@ class _SetWallpaperPageState extends State<SetWallpaperPage> {
                     ],
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  switch (index) {
+                    case 0:
+                      Navi.push(context, Navi.hotWallpaperPage);
+                      break;
+                  }
+                },
               ),
               Container(
                 width: double.infinity,

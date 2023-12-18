@@ -21,15 +21,12 @@ class _DisasterWarningDetailPageState extends State<DisasterWarningDetailPage> {
     return Scaffold(
       // 设置AppBar状态栏透明
       extendBodyBehindAppBar: true,
-      appBar: TitleBar(
+      appBar: const TitleBar(
         "灾害预警详情",
         backgroundColor: Colors.transparent,
         titleColor: Colors.white,
         leftImgName: "ic_back_black.svg",
         leftImgColor: Colors.white,
-        onLeftImgTap: () {
-          Navigator.of(context).pop();
-        },
       ),
       body: Stack(children: <Widget>[
         const Positioned.fill(

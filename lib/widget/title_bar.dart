@@ -59,7 +59,7 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
             alignment: Alignment.center,
             child: Text(
               title,
-              style: TextStyle(fontSize: titleSize ?? 18.sp, color: titleColor,fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: titleSize ?? 18.sp, color: titleColor, fontWeight: FontWeight.bold),
             ),
           ),
           Positioned(
@@ -84,7 +84,11 @@ class TitleBar extends StatelessWidget implements PreferredSizeWidget {
                           )
                     : Container(),
                 onTap: () {
-                  onLeftImgTap?.call();
+                  if (onLeftImgTap == null) {
+                    Navigator.of(context).pop();
+                  } else {
+                    onLeftImgTap?.call();
+                  }
                 },
               ),
             ),

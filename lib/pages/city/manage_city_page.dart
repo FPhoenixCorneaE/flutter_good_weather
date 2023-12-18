@@ -24,14 +24,11 @@ class _ManageCityPageState extends State<ManageCityPage> {
     return Scaffold(
       // 设置AppBar状态栏透明
       extendBodyBehindAppBar: true,
-      appBar: TitleBar(
+      appBar: const TitleBar(
         "管理城市",
         backgroundColor: Colors.white,
         titleColor: Colors.black,
         leftImgName: "ic_back_black.svg",
-        onLeftImgTap: () {
-          Navigator.of(context).pop();
-        },
       ),
       body: Container(
         color: const Color(0xfff5f5f5),

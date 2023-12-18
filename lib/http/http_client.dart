@@ -179,7 +179,7 @@ class HttpClient {
   }
 
   /// download
-  Future<Response> download(String urlPath, savePath,
+  Future<Response?> download(String urlPath, savePath,
       {ProgressCallback? onReceiveProgress,
       Map<String, dynamic>? queryParameters,
       bool isShowLoading = true,
@@ -205,8 +205,16 @@ class HttpClient {
         options: data,
       );
       return response;
-    } catch (e) {
-      rethrow;
+    } on DioError catch (e) {
+      if (CancelToken.isCancel(e)) {
+        EasyLoading.showToast("下载已取消！");
+      } else {
+        EasyLoading.showError(e.message);
+      }
+      return null;
+    } on Exception catch (e) {
+      EasyLoading.showError(e.toString());
+      return null;
     } finally {
       dismissLoading();
     }
