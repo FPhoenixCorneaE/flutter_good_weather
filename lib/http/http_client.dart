@@ -269,9 +269,11 @@ bool _isTokenTimeout(int? code) {
 
 /// 请求成功
 bool _isRequestSuccess(int? statusCode) {
-  return (statusCode != null && statusCode >= 200 && statusCode < 300);
+  return (statusCode != null && statusCode == 200);
 }
 
+/// 自定义错误状态码
+/// 和风天气接口返回的错误状态码处理
 HttpException _parseException(Exception error) {
   if (error is DioError) {
     switch (error.type) {
@@ -285,24 +287,24 @@ HttpException _parseException(Exception error) {
         try {
           int? errCode = error.response?.statusCode;
           switch (errCode) {
+            case 204:
+              return BadRequestException(message: "请求成功，但你查询的地区暂时没有你需要的数据。", code: errCode);
             case 400:
-              return BadRequestException(message: "请求语法错误", code: errCode);
+              return BadRequestException(message: "请求错误，可能包含错误的请求参数或缺少必选的请求参数。", code: errCode);
             case 401:
-              return UnauthorisedException(message: "没有权限", code: errCode);
+              return UnauthorisedException(
+                  message: "认证失败，可能使用了错误的KEY、数字签名错误、KEY的类型错误（如使用SDK的KEY去访问Web API）。", code: errCode);
+            case 402:
+              return UnauthorisedException(message: "超过访问次数或余额不足以支持继续访问服务，你可以充值、升级访问量或等待访问量重置。", code: errCode);
             case 403:
-              return BadRequestException(message: "服务器拒绝执行", code: errCode);
+              return BadRequestException(
+                  message: "无访问权限，可能是绑定的PackageName、BundleID、域名IP地址不一致，或者是需要额外付费的数据。", code: errCode);
             case 404:
-              return BadRequestException(message: "无法连接服务器", code: errCode);
-            case 405:
-              return BadRequestException(message: "请求方法被禁止", code: errCode);
+              return BadRequestException(message: "查询的数据或地区不存在。", code: errCode);
+            case 429:
+              return BadRequestException(message: "超过限定的QPM（每分钟访问次数），请参考QPM说明", code: errCode);
             case 500:
-              return BadServiceException(message: "服务器内部错误", code: errCode);
-            case 502:
-              return BadServiceException(message: "无效的请求", code: errCode);
-            case 503:
-              return BadServiceException(message: "服务器挂了", code: errCode);
-            case 505:
-              return UnauthorisedException(message: "不支持HTTP协议请求", code: errCode);
+              return BadServiceException(message: "无响应或超时，接口服务异常请联系我们", code: errCode);
             default:
               return UnknownException(error.error.message);
           }
