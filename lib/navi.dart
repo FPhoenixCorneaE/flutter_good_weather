@@ -5,6 +5,7 @@ import 'package:flutter_good_weather/pages/city/manage_city_page.dart';
 import 'package:flutter_good_weather/pages/disasterwarning/disaster_warning_detail_page.dart';
 import 'package:flutter_good_weather/pages/home/home_page.dart';
 import 'package:flutter_good_weather/pages/livingindex/more_living_index_page.dart';
+import 'package:flutter_good_weather/pages/wallpaper/set_wallpaper_page.dart';
 
 /// https://www.jianshu.com/p/b9d6ec92926f
 class Navi {
@@ -13,6 +14,7 @@ class Navi {
   static const moreAirQualityPage = "app://MoreAirQualityPage";
   static const disasterWarningDetailPage = "app://DisasterWarningDetailPage";
   static const moreLivingIndexPage = "app://MoreLivingIndexPage";
+  static const setWallpaperPage = "app://SetWallpaperPage";
 
   Navi();
 
@@ -36,6 +38,8 @@ class Navi {
           paramsMap["location"],
           paramsMap["locationId"],
         );
+      case setWallpaperPage:
+        return const SetWallpaperPage();
     }
     return Container();
   }

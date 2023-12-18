@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
     // 弹窗每项高度
     double cellHeight = 40.h;
     double upArrowHeight = 8.h;
-    List dataList = ["切换城市", "管理城市", "必应壁纸"];
+    List dataList = ["切换城市", "管理城市", "设置壁纸"];
     Navigator.push(
       context,
       Popup(
@@ -280,6 +280,8 @@ class _HomePageState extends State<HomePage> {
                                 if (result != null) {
                                   switchCity(result);
                                 }
+                              } else if (index == 2) {
+                                Navi.push(context, Navi.setWallpaperPage);
                               }
                             },
                             child: Container(
