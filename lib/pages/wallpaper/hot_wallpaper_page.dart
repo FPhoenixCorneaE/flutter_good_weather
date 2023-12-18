@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../../navi.dart';
 import '../../widget/title_bar.dart';
 
 class HotWallpaperPage extends StatefulWidget {
@@ -53,13 +54,22 @@ class _HotWallpaperPageState extends State<HotWallpaperPage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.w),
                 child: FadeInImage.memoryNetwork(
-                  image: hotWallpaperBean?.res?.vertical?[index].img ?? "",
+                  image: hotWallpaperBean?.res?.vertical?[index].thumb ?? "",
                   placeholder: kTransparentImage,
                   fit: BoxFit.cover,
                   height: random.nextInt(100).h + 480.h,
                 ),
               ),
-              onTap: () {},
+              onTap: () {
+                Navi.push(
+                  context,
+                  Navi.wallpaperPreviewPage,
+                  params: {
+                    "imageList": hotWallpaperBean?.res?.vertical?.map((e) => e.img).toList(),
+                    "initialPage": index,
+                  },
+                );
+              },
             );
           },
           itemCount: hotWallpaperBean?.res?.vertical?.length ?? 0,

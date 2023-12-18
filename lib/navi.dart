@@ -7,6 +7,7 @@ import 'package:flutter_good_weather/pages/home/home_page.dart';
 import 'package:flutter_good_weather/pages/livingindex/more_living_index_page.dart';
 import 'package:flutter_good_weather/pages/wallpaper/hot_wallpaper_page.dart';
 import 'package:flutter_good_weather/pages/wallpaper/set_wallpaper_page.dart';
+import 'package:flutter_good_weather/pages/wallpaper/wallpaper_preview_page.dart';
 
 /// https://www.jianshu.com/p/b9d6ec92926f
 class Navi {
@@ -17,6 +18,7 @@ class Navi {
   static const moreLivingIndexPage = "app://MoreLivingIndexPage";
   static const setWallpaperPage = "app://SetWallpaperPage";
   static const hotWallpaperPage = "app://HotWallpaperPage";
+  static const wallpaperPreviewPage = "app://WallpaperPreviewPage";
 
   Navi();
 
@@ -44,6 +46,12 @@ class Navi {
         return const SetWallpaperPage();
       case hotWallpaperPage:
         return const HotWallpaperPage();
+      case wallpaperPreviewPage:
+        Map<String, dynamic> paramsMap = params as Map<String, dynamic>;
+        return WallpaperPreviewPage(
+          paramsMap["imageList"] as List<String?>?,
+          paramsMap["initialPage"] as int,
+        );
     }
     return Container();
   }
