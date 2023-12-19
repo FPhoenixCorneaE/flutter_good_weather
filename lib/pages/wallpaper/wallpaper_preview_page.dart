@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../../constant/constant.dart';
@@ -17,6 +19,14 @@ class WallpaperPreviewPage extends StatefulWidget {
 }
 
 class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
+  late int currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    currentPosition = widget.initialPage;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +37,9 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
           Positioned(
             child: PageView.builder(
               controller: PageController(initialPage: widget.initialPage),
+              onPageChanged: (position) {
+                currentPosition = position;
+              },
               itemBuilder: (context, index) {
                 return FadeInImage.memoryNetwork(
                   image: widget.imageList?[index] ?? "",
@@ -54,6 +67,52 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
               onTap: () {
                 Navigator.of(context).pop();
               },
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 20.h,
+            child: Container(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.setInt(Constant.wallpaperType, 1);
+                        prefs.setString(Constant.wallpaper, widget.imageList?[currentPosition] ?? "");
+                        showBottomToast("设置成功！");
+                      });
+                    },
+                    color: Colors.white.withOpacity(0.2),
+                    textColor: Colors.white,
+                    shape: StadiumBorder(side: BorderSide(color: Colors.white, width: 1.w)),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    height: 32.h,
+                    child: Text(
+                      "设为壁纸",
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
+                  SizedBox(width: 20.w),
+                  MaterialButton(
+                    onPressed: () {
+
+                    },
+                    color: Colors.blue,
+                    textColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32.h))),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    height: 32.h,
+                    child: Text(
+                      "下载壁纸",
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

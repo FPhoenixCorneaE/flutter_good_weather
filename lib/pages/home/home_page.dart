@@ -22,6 +22,7 @@ import 'package:flutter_good_weather/util/weather_util.dart';
 import 'package:flutter_good_weather/widget/icon_text.dart';
 import 'package:flutter_good_weather/widget/popup.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
+import 'package:flutter_good_weather/widget/wallpaper_image.dart';
 import 'package:flutter_good_weather/widget/windmills.dart';
 import 'package:flutter_good_weather/widget/zoom_in_dialog.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -84,12 +85,7 @@ class _HomePageState extends State<HomePage> {
         onRefresh: _onRefresh,
         child: Stack(
           children: <Widget>[
-            const Positioned.fill(
-              child: Image(
-                image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
-                fit: BoxFit.cover,
-              ),
-            ),
+            const Positioned.fill(child: WallpaperImage()),
             Container(
               margin: EdgeInsets.only(top: topSafeHeight + 72.h),
               child: CustomScrollView(
