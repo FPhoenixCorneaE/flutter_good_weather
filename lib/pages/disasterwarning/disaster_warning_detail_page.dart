@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/util/date_util.dart';
 import 'package:flutter_good_weather/widget/title_bar.dart';
+import 'package:flutter_good_weather/widget/wallpaper_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constant/constant.dart';
@@ -29,12 +30,7 @@ class _DisasterWarningDetailPageState extends State<DisasterWarningDetailPage> {
         leftImgColor: Colors.white,
       ),
       body: Stack(children: <Widget>[
-        const Positioned.fill(
-          child: Image(
-            image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
-            fit: BoxFit.cover,
-          ),
-        ),
+        const Positioned.fill(child: WallpaperImage()),
         Positioned.fill(
           top: 12.h,
           child: ListView.separated(

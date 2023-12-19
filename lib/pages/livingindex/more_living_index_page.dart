@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/living_index_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
+import 'package:flutter_good_weather/widget/wallpaper_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:grouped_grid/grouped_grid.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -46,12 +47,7 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
         leftImgColor: Colors.white,
       ),
       body: Stack(children: <Widget>[
-        const Positioned.fill(
-          child: Image(
-            image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
-            fit: BoxFit.cover,
-          ),
-        ),
+        const Positioned.fill(child: WallpaperImage()),
         Positioned.fill(
           left: 12.w,
           top: navigationBarHeight,
@@ -64,9 +60,7 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                 mainAxisSpacing: 4.h,
                 childAspectRatio: 2,
               ),
-              groupKeys:
-                  livingIndexBean?.daily?.map((e) => e.date ?? "").toSet() ??
-                      <dynamic>{},
+              groupKeys: livingIndexBean?.daily?.map((e) => e.date ?? "").toSet() ?? <dynamic>{},
               groupStickyHeaders: false,
               groupHeaderBuilder: (context, group) {
                 return Padding(
@@ -74,17 +68,13 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                   child: Text(
                     group,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.bold),
                   ),
                 );
               },
               itemBuilder: (context, group) {
-                Daily? element = livingIndexBean?.daily
-                    ?.where((element) => element.date == group.key)
-                    .toList()[group.itemIndex];
+                Daily? element =
+                    livingIndexBean?.daily?.where((element) => element.date == group.key).toList()[group.itemIndex];
                 return Card(
                   color: const Color(0x66000000),
                   elevation: 8.h,
@@ -93,24 +83,19 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(child: Text(
-                          element?.name ?? "",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.bold),
-                        ),),
+                        Center(
+                          child: Text(
+                            element?.name ?? "",
+                            style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                         Row(
                           children: [
-                            Text("等级：",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16.sp)),
+                            Text("等级：", style: TextStyle(color: Colors.white, fontSize: 16.sp)),
                             Expanded(
                               child: IntervalProgressBar(
-                                  direction:
-                                      IntervalProgressDirection.horizontal,
-                                  max: getLivingIndexMaxLevelByType(
-                                      element?.type),
+                                  direction: IntervalProgressDirection.horizontal,
+                                  max: getLivingIndexMaxLevelByType(element?.type),
                                   progress: int.parse(element?.level ?? "1"),
                                   intervalSize: 2,
                                   size: Size(double.infinity, 8.h),
@@ -123,15 +108,12 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                             ),
                           ],
                         ),
-                        Text("级别：${element?.category ?? ""}",
-                            style: TextStyle(
-                                color: Colors.white, fontSize: 16.sp)),
+                        Text("级别：${element?.category ?? ""}", style: TextStyle(color: Colors.white, fontSize: 16.sp)),
                         Expanded(
                           child: Text(
                             "建议：${element?.text ?? ""}",
                             textAlign: TextAlign.start,
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16.sp),
+                            style: TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ),
                       ],
@@ -139,11 +121,7 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
                   ),
                 );
               },
-              itemCountForGroup: (key) =>
-                  livingIndexBean?.daily
-                      ?.where((element) => element.date == key)
-                      .length ??
-                  0),
+              itemCountForGroup: (key) => livingIndexBean?.daily?.where((element) => element.date == key).length ?? 0),
         )
       ]),
     );
@@ -197,10 +175,7 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
         child: Text(
           value,
           textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.white,
-              fontSize: 28.sp,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: 28.sp, fontWeight: FontWeight.bold),
         ),
       ),
       itemBuilder: (c, element) {
@@ -214,13 +189,9 @@ class _MoreLivingIndexPageState extends State<MoreLivingIndexPage> {
               children: [
                 Text(
                   element.name ?? "",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
                 ),
-                Text("建议：${element.text ?? ""}",
-                    style: TextStyle(color: Colors.white, fontSize: 16.sp)),
+                Text("建议：${element.text ?? ""}", style: TextStyle(color: Colors.white, fontSize: 16.sp)),
               ],
             ),
           ),

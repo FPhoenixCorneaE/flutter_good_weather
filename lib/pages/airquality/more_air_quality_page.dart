@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/bean/air_quality_forecast_bean.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_good_weather/util/screen_util.dart';
+import 'package:flutter_good_weather/widget/wallpaper_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
@@ -56,12 +57,7 @@ class _MoreAirQualityPageState extends State<MoreAirQualityPage> {
       ),
       body: Stack(
         children: <Widget>[
-          const Positioned.fill(
-            child: Image(
-              image: AssetImage("${Constant.assetsImages}pic_bg_home.jpg"),
-              fit: BoxFit.cover,
-            ),
-          ),
+          const Positioned.fill(child: WallpaperImage()),
           Positioned.fill(
               top: navigationBarHeight + 12.h,
               bottom: 20.h,
