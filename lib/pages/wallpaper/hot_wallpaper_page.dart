@@ -67,6 +67,7 @@ class _HotWallpaperPageState extends State<HotWallpaperPage> {
                   params: {
                     "imageList": hotWallpaperBean?.res?.vertical?.map((e) => e.img).toList(),
                     "initialPage": index,
+                    "wallpaperType": 1,
                   },
                 );
               },

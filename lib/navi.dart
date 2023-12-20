@@ -50,7 +50,9 @@ class Navi {
         Map<String, dynamic> paramsMap = params as Map<String, dynamic>;
         return WallpaperPreviewPage(
           paramsMap["imageList"] as List<String?>?,
-          paramsMap["initialPage"] as int,
+          paramsMap["wallpaperType"] as int,
+          initialPage: (paramsMap["initialPage"] as int?) ?? 0,
+          isAssets: (paramsMap["isAssets"] as bool?) ?? false,
         );
     }
     return Container();

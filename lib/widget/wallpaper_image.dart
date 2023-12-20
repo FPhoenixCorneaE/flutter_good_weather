@@ -12,8 +12,8 @@ class WallpaperImage extends StatefulWidget {
 }
 
 class _WallpaperImageState extends State<WallpaperImage> with TickerProviderStateMixin {
-  late int wallpaperType;
-  late String wallpaper;
+  int? wallpaperType;
+  String wallpaper = "";
 
   @override
   void initState() {
@@ -32,23 +32,25 @@ class _WallpaperImageState extends State<WallpaperImage> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return wallpaperType == 1 || wallpaperType == 2
-        ? FadeInImage.memoryNetwork(
-            image: wallpaper,
-            placeholder: kTransparentImage,
-            fit: BoxFit.cover,
-          )
-        : Image(
-            image: AssetImage(wallpaper),
-            fit: BoxFit.cover,
-          );
+    return wallpaperType == null
+        ? Container()
+        : wallpaperType == 1 || wallpaperType == 2
+            ? FadeInImage.memoryNetwork(
+                image: wallpaper,
+                placeholder: kTransparentImage,
+                fit: BoxFit.cover,
+              )
+            : Image(
+                image: AssetImage(wallpaper),
+                fit: BoxFit.cover,
+              );
   }
 
   void getWallpaperConfig() {
     SharedPreferences.getInstance().then((prefs) {
       setState(() {
         wallpaperType = prefs.getInt(Constant.wallpaperType) ?? 0;
-        wallpaper = prefs.getString(Constant.wallpaper) ?? "";
+        wallpaper = prefs.getString(Constant.wallpaper) ?? "${Constant.assetsImages}pic_bg_home.jpg";
       });
     });
   }

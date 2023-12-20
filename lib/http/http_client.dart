@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 import 'dio_client.dart';
 import 'dio_config.dart';
@@ -179,44 +181,49 @@ class HttpClient {
   }
 
   /// download
-  Future<Response?> download(String urlPath, savePath,
-      {ProgressCallback? onReceiveProgress,
+  /// [isImage] true为图片，false为文件
+  Future<Map<Object?, Object?>?> download(String url, String savePath,
+      {bool isImage = true,
       Map<String, dynamic>? queryParameters,
-      bool isShowLoading = true,
-      CancelToken? cancelToken,
-      bool deleteOnError = true,
-      String lengthHeader = Headers.contentLengthHeader,
-      data,
       Options? options,
-      HttpTransformer? httpTransformer}) async {
+      CancelToken? cancelToken,
+      Object? data,
+      ProgressCallback? onReceiveProgress,
+      bool isReturnPathOfIOS = false}) async {
     try {
-      if (isShowLoading) {
-        showLoading();
-      }
-      var response = await _dio.download(
-        urlPath,
-        savePath,
-        onReceiveProgress: onReceiveProgress,
+      var response = await _dio.get(
+        url,
         queryParameters: queryParameters,
-        cancelToken: cancelToken,
-        deleteOnError: deleteOnError,
-        lengthHeader: lengthHeader,
         data: data,
-        options: data,
+        options: options ??
+            Options(
+                responseType: ResponseType.bytes,
+                followRedirects: false,
+                validateStatus: (status) {
+                  return status != null && status < 500;
+                }),
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
       );
-      return response;
-    } on DioError catch (e) {
+      final dynamic result;
+      if (isImage) {
+        result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100);
+      } else {
+        result = await ImageGallerySaver.saveFile(savePath);
+      }
+      return result;
+    } on DioException catch (e) {
       if (CancelToken.isCancel(e)) {
         EasyLoading.showToast("下载已取消！");
       } else {
-        EasyLoading.showError(e.message);
+        EasyLoading.showError(e.message ?? "");
       }
       return null;
     } on Exception catch (e) {
-      EasyLoading.showError(e.toString());
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
-    } finally {
-      dismissLoading();
     }
   }
 }
@@ -283,15 +290,17 @@ bool _isRequestSuccess(int? statusCode) {
 /// 自定义错误状态码
 /// 和风天气接口返回的错误状态码处理
 HttpException _parseException(Exception error) {
-  if (error is DioError) {
+  if (error is DioException) {
     switch (error.type) {
-      case DioErrorType.connectTimeout:
-      case DioErrorType.receiveTimeout:
-      case DioErrorType.sendTimeout:
-        return NetworkException(message: error.error.message);
-      case DioErrorType.cancel:
-        return CancelException(error.error.message);
-      case DioErrorType.response:
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.connectionError:
+        return NetworkException(message: error.message);
+      case DioExceptionType.cancel:
+        return CancelException(error.message);
+      case DioExceptionType.badCertificate:
+      case DioExceptionType.badResponse:
         try {
           int? errCode = error.response?.statusCode;
           switch (errCode) {
@@ -314,13 +323,13 @@ HttpException _parseException(Exception error) {
             case 500:
               return BadServiceException(message: "无响应或超时，接口服务异常请联系我们", code: errCode);
             default:
-              return UnknownException(error.error.message);
+              return UnknownException(error.message);
           }
         } on Exception catch (_) {
-          return UnknownException(error.error.message);
+          return UnknownException(error.message);
         }
 
-      case DioErrorType.other:
+      case DioExceptionType.unknown:
         if (error.error is SocketException) {
           return NetworkException(message: error.message);
         } else {

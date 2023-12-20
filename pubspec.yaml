@@ -47,16 +47,16 @@ dependencies:
   flutter_easyloading: ^3.0.5
 
   # dio网络库：https://pub.dev/packages/dio
-  dio: ^4.0.6
+  dio: ^5.4.0
 
   # dio cookie管理：https://pub.flutter-io.cn/packages/dio_cookie_manager
-  dio_cookie_manager: ^2.0.0
-
-  # dio cache管理：https://pub.flutter-io.cn/packages/cookie_jar
-  cookie_jar: ^3.0.1
+  dio_cookie_manager: ^3.1.1
 
   # dio缓存处理：https://pub.flutter-io.cn/packages/dio_cache_interceptor
-  dio_cache_interceptor: ^3.3.1
+  dio_cache_interceptor: ^3.5.0
+
+  # dio cache管理：https://pub.flutter-io.cn/packages/cookie_jar
+  cookie_jar: ^4.0.8
 
   # SQLite 数据库：https://pub.flutter-io.cn/packages/sqflite
   sqflite: ^2.2.3
@@ -99,6 +99,9 @@ dependencies:
 
   # 透明图片：https://pub-web.flutter-io.cn/packages/transparent_image
   transparent_image: ^2.0.1
+
+  # 保存文件或图片到本地：https://pub-web.flutter-io.cn/packages/image_gallery_saver
+  image_gallery_saver: ^2.0.3
 
 
 dev_dependencies:

@@ -14,9 +14,9 @@ class DioConfig {
   final String? cookiesPath;
   final List<Interceptor>? interceptors;
   final Map<String, dynamic>? headers;
-  final int connectTimeout;
-  final int sendTimeout;
-  final int receiveTimeout;
+  final int? connectTimeout;
+  final int? sendTimeout;
+  final int? receiveTimeout;
 
   DioConfig({
     this.baseUrl,
@@ -24,8 +24,8 @@ class DioConfig {
     this.cookiesPath,
     this.interceptors,
     this.headers,
-    this.connectTimeout = Duration.millisecondsPerMinute,
-    this.sendTimeout = Duration.millisecondsPerMinute,
-    this.receiveTimeout = Duration.millisecondsPerMinute,
+    this.connectTimeout,
+    this.sendTimeout,
+    this.receiveTimeout,
   });
 }

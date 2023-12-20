@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constant/constant.dart';
 import '../../navi.dart';
@@ -62,10 +61,15 @@ class _SetWallpaperPageState extends State<SetWallpaperPage> {
                       Navi.push(context, Navi.hotWallpaperPage);
                       break;
                     case 3:
-                      SharedPreferences.getInstance().then((prefs) {
-                        prefs.setInt(Constant.wallpaperType, 0);
-                        prefs.setString(Constant.wallpaper, "${Constant.assetsImages}pic_bg_home.jpg");
-                      });
+                      Navi.push(
+                        context,
+                        Navi.wallpaperPreviewPage,
+                        params: {
+                          "imageList": ["${Constant.assetsImages}pic_bg_home.jpg"],
+                          "wallpaperType": 0,
+                          "isAssets": true,
+                        },
+                      );
                       break;
                   }
                 },

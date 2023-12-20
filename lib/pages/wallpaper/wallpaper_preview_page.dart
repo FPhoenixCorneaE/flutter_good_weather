@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/http/http_client.dart';
 import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -11,8 +13,16 @@ import '../../constant/constant.dart';
 class WallpaperPreviewPage extends StatefulWidget {
   final List<String?>? imageList;
   final int initialPage;
+  final int wallpaperType;
+  final bool isAssets;
 
-  const WallpaperPreviewPage(this.imageList, this.initialPage, {super.key});
+  const WallpaperPreviewPage(
+    this.imageList,
+    this.wallpaperType, {
+    super.key,
+    this.initialPage = 0,
+    this.isAssets = false,
+  });
 
   @override
   State<WallpaperPreviewPage> createState() => _WallpaperPreviewPageState();
@@ -41,13 +51,18 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                 currentPosition = position;
               },
               itemBuilder: (context, index) {
-                return FadeInImage.memoryNetwork(
-                  image: widget.imageList?[index] ?? "",
-                  placeholder: kTransparentImage,
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
-                );
+                return !widget.isAssets
+                    ? FadeInImage.memoryNetwork(
+                        image: widget.imageList?[index] ?? "",
+                        placeholder: kTransparentImage,
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                      )
+                    : Image(
+                        image: AssetImage(widget.imageList?[index] ?? ""),
+                        fit: BoxFit.cover,
+                      );
               },
               itemCount: widget.imageList?.length ?? 0,
             ),
@@ -81,8 +96,12 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                   MaterialButton(
                     onPressed: () {
                       SharedPreferences.getInstance().then((prefs) {
-                        prefs.setInt(Constant.wallpaperType, 1);
-                        prefs.setString(Constant.wallpaper, widget.imageList?[currentPosition] ?? "");
+                        prefs.setInt(Constant.wallpaperType, widget.wallpaperType);
+                        var imgUrl = widget.imageList?[currentPosition] ?? "";
+                        if (widget.wallpaperType == 1) {
+                          imgUrl = imgUrl.substring(0, imgUrl.indexOf("?"));
+                        }
+                        prefs.setString(Constant.wallpaper, imgUrl);
                         showBottomToast("设置成功！");
                       });
                     },
@@ -98,8 +117,20 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                   ),
                   SizedBox(width: 20.w),
                   MaterialButton(
-                    onPressed: () {
-
+                    onPressed: () async {
+                      var applicationCacheDir = await getTemporaryDirectory();
+                      var start = widget.imageList?[currentPosition]?.indexOf("/", 8) ?? 0;
+                      var end = widget.imageList?[currentPosition]?.indexOf("?", 8) ?? 0;
+                      var savePath =
+                          "${applicationCacheDir.path}${widget.imageList?[currentPosition]?.substring(start, end) ?? ""}.png";
+                      HttpClient.getInstance()
+                          .download(widget.imageList?[currentPosition] ?? "", savePath,
+                              onReceiveProgress: (count, total) {})
+                          .then((result) {
+                        if ((result?["isSuccess"] as bool) == true) {
+                          showBottomToast("图片保存成功");
+                        }
+                      });
                     },
                     color: Colors.blue,
                     textColor: Colors.white,
