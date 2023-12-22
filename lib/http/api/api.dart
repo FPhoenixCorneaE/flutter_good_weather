@@ -1,4 +1,5 @@
 import 'package:flutter_good_weather/bean/air_quality_bean.dart';
+import 'package:flutter_good_weather/bean/bing_daily_image_bean.dart';
 import 'package:flutter_good_weather/bean/disaster_warning_bean.dart';
 import 'package:flutter_good_weather/bean/hourly_weather_bean.dart';
 import 'package:flutter_good_weather/bean/minutely_weather_bean.dart';
@@ -163,5 +164,13 @@ class Api {
         "adult": adult ?? false,
       },
     ).then((value) => callback?.call(HotWallpaperBean.fromJson(value.data)));
+  }
+
+  /// 必应每日一图
+  Api.bingDailyImage({HttpCallback<BingDailyImageBean?>? callback}) {
+    HttpClient.getInstance().resetBaseUrl(baseUrlBing).get(
+      "/HPImageArchive.aspx?format=js&idx=0&n=1",
+      queryParameters: {},
+    ).then((value) => callback?.call(BingDailyImageBean.fromJson(value.data)));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -59,6 +60,18 @@ class _SetWallpaperPageState extends State<SetWallpaperPage> {
                   switch (index) {
                     case 0:
                       Navi.push(context, Navi.hotWallpaperPage);
+                      break;
+                    case 1:
+                      Api.bingDailyImage(callback: (data) {
+                        Navi.push(
+                          context,
+                          Navi.wallpaperPreviewPage,
+                          params: {
+                            "imageList": ["${Api.baseUrlBing}${data?.images?[0].url ?? ""}"],
+                            "wallpaperType": 2,
+                          },
+                        );
+                      });
                       break;
                     case 3:
                       Navi.push(
