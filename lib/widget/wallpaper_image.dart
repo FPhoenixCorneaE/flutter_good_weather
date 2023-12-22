@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/constant/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,10 +42,15 @@ class _WallpaperImageState extends State<WallpaperImage> with TickerProviderStat
                 placeholder: kTransparentImage,
                 fit: BoxFit.cover,
               )
-            : Image(
-                image: AssetImage(wallpaper),
-                fit: BoxFit.cover,
-              );
+            : wallpaperType == 3
+                ? Image.file(
+                    File(wallpaper),
+                    fit: BoxFit.cover,
+                  )
+                : Image(
+                    image: AssetImage(wallpaper),
+                    fit: BoxFit.cover,
+                  );
   }
 
   void getWallpaperConfig() {

@@ -21,8 +21,8 @@ class HotWallpaperBean {
 
   HotWallpaperBean.fromJson(dynamic json) {
     _msg = json?['msg'];
-    _res = json['res'] != null ? Res.fromJson(json['res']) : null;
-    _code = json['code'];
+    _res = json?['res'] != null ? Res.fromJson(json['res']) : null;
+    _code = json?['code'];
   }
 
   String? _msg;

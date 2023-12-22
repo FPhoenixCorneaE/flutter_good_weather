@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/http/api/api.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constant/constant.dart';
 import '../../navi.dart';
+import '../../util/toast_util.dart';
 import '../../widget/title_bar.dart';
 
 /// 设置壁纸
@@ -71,6 +74,21 @@ class _SetWallpaperPageState extends State<SetWallpaperPage> {
                             "wallpaperType": 2,
                           },
                         );
+                      });
+                      break;
+                    case 2:
+                      // Pick an image.
+                      ImagePicker().pickImage(source: ImageSource.gallery).then((image) {
+                        if (image != null) {
+                          print("localImagePath: ${image.path}");
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.setInt(Constant.wallpaperType, 3);
+                            prefs.setString(Constant.wallpaper, image.path);
+                            showBottomToast("设置成功！");
+                          });
+                        } else {
+                          showBottomToast("设置失败！");
+                        }
                       });
                       break;
                     case 3:

@@ -103,6 +103,9 @@ dependencies:
   # 保存文件或图片到本地：https://pub-web.flutter-io.cn/packages/image_gallery_saver
   image_gallery_saver: ^2.0.3
 
+  # 用于从图像库中挑选图像，并使用相机拍摄新照片：https://pub-web.flutter-io.cn/packages/image_picker
+  image_picker: ^1.0.5
+
 
 dev_dependencies:
   flutter_test:
