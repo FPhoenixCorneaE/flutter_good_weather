@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_good_weather/http/http_client.dart';
+import 'package:flutter_good_weather/util/image_util.dart';
 import 'package:flutter_good_weather/util/toast_util.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -88,7 +89,7 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
             left: 0,
             right: 0,
             bottom: 20.h,
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +125,7 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                         int end;
                         String name;
                         if (widget.wallpaperType == 1) {
-                          // 热门壁纸的url：
+                          // 热门壁纸的url：http://img5.adesk.com/64f1c6a7e7bce714aed6d34a?imageMogr2/thumbnail/!1080x1920r/gravity/Center/crop/1080x1920&sign=200052c6347a0927c9e88217cc711606&t=65854ce1
                           start = widget.imageList?[currentPosition]?.indexOf("/", 8) ?? 0;
                           end = widget.imageList?[currentPosition]?.indexOf("?", 8) ?? 0;
                           name = widget.imageList?[currentPosition]?.substring(start, end) ?? "";
@@ -142,8 +143,12 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                             .then((result) {
                           if ((result?["isSuccess"] as bool) == true) {
                             showBottomToast("图片保存成功");
+                          } else {
+                            showBottomToast("图片保存失败");
                           }
                         });
+                      } else if (widget.wallpaperType == 0) {
+                        savaAssetImage(widget.imageList?[currentPosition] ?? "");
                       }
                     },
                     color: Colors.blue,
