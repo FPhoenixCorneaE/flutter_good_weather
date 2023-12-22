@@ -183,12 +183,13 @@ class HttpClient {
   /// download
   /// [isImage] true为图片，false为文件
   Future<Map<Object?, Object?>?> download(String url, String savePath,
-      {bool isImage = true,
-      Map<String, dynamic>? queryParameters,
+      {Map<String, dynamic>? queryParameters,
       Options? options,
       CancelToken? cancelToken,
       Object? data,
       ProgressCallback? onReceiveProgress,
+      bool isImage = true,
+      String? name,
       bool isReturnPathOfIOS = false}) async {
     try {
       var response = await _dio.get(
@@ -207,9 +208,9 @@ class HttpClient {
       );
       final dynamic result;
       if (isImage) {
-        result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100);
+        result = await ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100, name: name);
       } else {
-        result = await ImageGallerySaver.saveFile(savePath);
+        result = await ImageGallerySaver.saveFile(savePath, name: name);
       }
       return result;
     } on DioException catch (e) {

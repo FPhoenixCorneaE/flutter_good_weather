@@ -119,18 +119,32 @@ class _WallpaperPreviewPageState extends State<WallpaperPreviewPage> {
                   MaterialButton(
                     onPressed: () async {
                       var applicationCacheDir = await getTemporaryDirectory();
-                      var start = widget.imageList?[currentPosition]?.indexOf("/", 8) ?? 0;
-                      var end = widget.imageList?[currentPosition]?.indexOf("?", 8) ?? 0;
-                      var savePath =
-                          "${applicationCacheDir.path}${widget.imageList?[currentPosition]?.substring(start, end) ?? ""}.png";
-                      HttpClient.getInstance()
-                          .download(widget.imageList?[currentPosition] ?? "", savePath,
-                              onReceiveProgress: (count, total) {})
-                          .then((result) {
-                        if ((result?["isSuccess"] as bool) == true) {
-                          showBottomToast("图片保存成功");
+                      if (widget.wallpaperType == 1 || widget.wallpaperType == 2) {
+                        int start;
+                        int end;
+                        String name;
+                        if (widget.wallpaperType == 1) {
+                          // 热门壁纸的url：
+                          start = widget.imageList?[currentPosition]?.indexOf("/", 8) ?? 0;
+                          end = widget.imageList?[currentPosition]?.indexOf("?", 8) ?? 0;
+                          name = widget.imageList?[currentPosition]?.substring(start, end) ?? "";
+                        } else {
+                          // 必应每日一图的url：https://cn.bing.com/th?id=OHR.WinterSolstice2023_ZH-CN4450201916_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp
+                          start = widget.imageList?[currentPosition]?.indexOf(".", 20) ?? 0;
+                          end = widget.imageList?[currentPosition]?.indexOf("&") ?? 0;
+                          name = widget.imageList?[currentPosition]?.substring(start + 1, end) ?? "";
+                          name = name.replaceAll(".jpg", "");
                         }
-                      });
+                        var savePath = "${applicationCacheDir.path}$name";
+                        HttpClient.getInstance()
+                            .download(widget.imageList?[currentPosition] ?? "", savePath,
+                                name: name, onReceiveProgress: (count, total) {})
+                            .then((result) {
+                          if ((result?["isSuccess"] as bool) == true) {
+                            showBottomToast("图片保存成功");
+                          }
+                        });
+                      }
                     },
                     color: Colors.blue,
                     textColor: Colors.white,
